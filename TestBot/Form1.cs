@@ -51,7 +51,7 @@ namespace TestBot
 
         private void BotOnInlineQueryReceived(object sender, InlineQueryEventArgs e)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException(); //kgkhlj;kj;k;
         }
 
         private void Button1_Click(object sender, EventArgs e)
