@@ -63,10 +63,16 @@ namespace TestBot
         {
             if (chat == null)
             {
-                chat = e.Message.Chat;
+                chat = e.Message.Chat; 
             }
             if (e.Message.Type == MessageType.Text)
             {
+                switch(St)
+                {
+                    case States.enter_name:
+
+                        break;
+                }
                 switch (e.Message.Text)
                 {
                     #region start
@@ -161,8 +167,8 @@ Usage:
             switch (callbackQuery.Data)
             {
                 case LoginCommand:
-                    St = States.login;
-                    await botClient.SendTextMessageAsync(chat.Id, "123");
+                    St = States.enter_name;
+                    await botClient.SendTextMessageAsync(chat.Id, "Enter your login");
                     break;
 
                 case RegisterCommand:
