@@ -43,7 +43,6 @@ namespace TestBot
             InitializeComponent();
 
             // new BotLinq();
-
             botClient = new TelegramBotClient(token);
             botDb = new BotDB();
         }
