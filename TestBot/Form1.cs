@@ -42,7 +42,7 @@ namespace TestBot
         {
             InitializeComponent();
 
-            new BotLinq();
+            // new BotLinq();
 
             botClient = new TelegramBotClient(token);
             botDb = new BotDB();
@@ -111,82 +111,13 @@ namespace TestBot
                         break;
                     #endregion start
 
-                    #region inline
-                    case "/inline":
-                        InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(new[]
-                    {
-                        new [] // first row
-                        {
-                            InlineKeyboardButton.WithCallbackData("1.1"),
-                            InlineKeyboardButton.WithCallbackData("1.2"),
-                        },
-                        new [] // second row
-                        {
-                            InlineKeyboardButton.WithCallbackData("2.1"),
-                            InlineKeyboardButton.WithCallbackData("2.2"),
-                        }
-                    });
-                        botClient.SendTextMessageAsync(chat.Id, "Choose", replyMarkup: inlineKeyboard);
-                        break;
-                    #endregion inline
-
-                    #region keyboard
-                    case "/keyboard":
-                        ReplyKeyboardMarkup z = new ReplyKeyboardMarkup();
-                        ReplyKeyboardMarkup ReplyKeyboard = new ReplyKeyboardMarkup(new[]
-                        {
-                        new[] { new KeyboardButton("1.1"), new KeyboardButton("1.2") },
-                        new[] { new KeyboardButton("2.1"), new KeyboardButton("2.2") },
-                    });
-
-                        botClient.SendTextMessageAsync(chat.Id, "Choose", replyMarkup: ReplyKeyboard);
-                        break;
-                    #endregion keyboard
-
-                    #region photo
-                    case "/photo":
-                        botClient.SendChatActionAsync(chat.Id, ChatAction.UploadPhoto);
-
-                        const string file = @"Chrysanthemum.jpg";
-
-                        var fileName = file.Split(Path.DirectorySeparatorChar).Last();
-
-                        using (FileStream fileStream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read))
-                        {
-                            //                            FileToSend fileToSend = new FileToSend("Nice Picture", fileStream);
-                            Telegram.Bot.Types.InputFiles.InputOnlineFile fileToSend = new Telegram.Bot.Types.InputFiles.InputOnlineFile(fileStream);
-                            botClient.SendPhotoAsync(chat.Id, fileToSend);
-                        }
-                        break;
-                    #endregion photo
-
-                    #region request
-                    case "/request":
-                        var RequestReplyKeyboard = new ReplyKeyboardMarkup(new[]
-                        {
-                            new KeyboardButton("Location"),
-                            new KeyboardButton("Contact"),
-                        });
-
-                        botClient.SendTextMessageAsync(chat.Id, "Who or Where are you?", replyMarkup: RequestReplyKeyboard);
-                        break;
-                    #endregion request
-
                     #region default
                     default:
-                        const string usage = @"
-Usage:
-/inline   - send inline keyboard
-/keyboard - send custom keyboard
-/photo    - send a photo
-/request  - request location or contact";
-
-                        botClient.SendTextMessageAsync(chat.Id, usage, replyMarkup: new ReplyKeyboardRemove());
+                        botClient.SendTextMessageAsync(chat.Id, "Sorry, error in the Bot", replyMarkup: new ReplyKeyboardRemove());
                         break;
-                        #endregion default
+                    #endregion default
                 }
             }
-            //await botClient.SendTextMessageAsync(e.Message.Chat.Id, "123");
         }
 
         private async void BotOnCallbackQueryReceived(object sender, CallbackQueryEventArgs callbackQueryEventArgs)
