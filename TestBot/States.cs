@@ -8,10 +8,10 @@ namespace TestBot
 {
     enum States
     {
-        none,
-        start,
-        login,
-        enter_name,
-        enter_pas,
+        none,               // пустое состояние
+        start,              // бот запущен
+        login,              // успешно вошли в игру (т.е. логин и пароль правильные)
+        enter_name,         // введено имя пользователя
+        enter_pas,          // введен пароль
     }
 }
