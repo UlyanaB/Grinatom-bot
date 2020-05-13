@@ -80,15 +80,15 @@ namespace TestBot
                     if (reader.Read())
                     {
                         usr = new Usr();
-                        usr.id = reader.GetInt32(0);
-                        usr.nickName = login;
-                        usr.psw = reader.GetString(1);
-                        usr.firstName = reader.GetString(2);
-                        usr.secondName = reader.GetString(3);
-                        usr.lastName = reader.GetString(4);
-                        usr.mail = reader.GetString(5);
-                        usr.extendedVerification = string.Equals(reader.GetString(6), "Y", StringComparison.CurrentCultureIgnoreCase);
-                        usr.useMailToReports = string.Equals(reader.GetString(7), "Y", StringComparison.CurrentCultureIgnoreCase);
+                        usr.id                      = reader.GetInt32(0);
+                        usr.nickName                = login;
+                        usr.psw                     = reader.IsDBNull(1) ? null : reader.GetString(1);
+                        usr.firstName               = reader.IsDBNull(2) ? null : reader.GetString(2);
+                        usr.secondName              = reader.IsDBNull(3) ? null : reader.GetString(3);
+                        usr.lastName                = reader.IsDBNull(4) ? null : reader.GetString(4);
+                        usr.mail                    = reader.IsDBNull(5) ? null : reader.GetString(5);
+                        usr.extendedVerification    = string.Equals(reader.IsDBNull(6) ? null : reader.GetString(6), "Y", StringComparison.CurrentCultureIgnoreCase);
+                        usr.useMailToReports        = string.Equals(reader.IsDBNull(7) ? null : reader.GetString(7), "Y", StringComparison.CurrentCultureIgnoreCase);
                     }
                 }
                 return usr;

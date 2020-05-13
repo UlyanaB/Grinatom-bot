@@ -36,17 +36,37 @@ namespace TestBot
                                                                                         }
                                                                             });
         private States St = States.none;
-        private BotDB botDb;
+        //private BotDB botDb;
+        private BotLinq botLinq;
 
+        private BotLinq.Usr usr = null;
+        private string login = null;
+        private string pas = null;
+
+        #region Init Bot
         public Form1()
         {
             InitializeComponent();
 
-            // new BotLinq();
+            botLinq = new BotLinq();
+            //botDb = new BotDB();
             botClient = new TelegramBotClient(token);
-            botDb = new BotDB();
         }
 
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            botClient.OnMessage += BotClient_OnMessageReceived;
+            botClient.OnMessageEdited += BotClient_OnMessageReceived;
+            botClient.OnCallbackQuery += BotOnCallbackQueryReceived;
+            botClient.OnInlineQuery += BotOnInlineQueryReceived;
+            botClient.OnInlineResultChosen += BotOnChosenInlineResultReceived;
+            botClient.OnReceiveError += BotOnReceiveError;
+
+            botClient.StartReceiving(Array.Empty<UpdateType>());
+        }
+        #endregion Init Bot
+
+        #region Not implemented
         private void BotOnReceiveError(object sender, ReceiveErrorEventArgs e)
         {
             throw new NotImplementedException();
@@ -57,10 +77,73 @@ namespace TestBot
             throw new NotImplementedException(); 
         }
 
-        private void Button1_Click(object sender, EventArgs e)
+        private void BotOnChosenInlineResultReceived(object sender, ChosenInlineResultEventArgs chosenInlineResultEventArgs)
         {
-            botClient.SendTextMessageAsync(chat.Id, "456");
+            throw new NotImplementedException();
+            //textBox1.Text += $"Received inline result: {chosenInlineResultEventArgs.ChosenInlineResult.ResultId}";
         }
+        #endregion Not implemented
+
+        #region States
+        /// <summary>
+        /// Конечный автомат
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns>продолжить выполнение - true, прекратить выполнение - false</returns>
+        private bool StateMachine(string text)
+        {
+            switch (St)
+            {
+                case States.enter_name:
+                    login = text;
+                    usr = botLinq.GetUserByLogin(login);
+                    St = States.enter_pas;
+                    botClient.SendTextMessageAsync(chat.Id, "Enter your password");
+                    return false;
+
+                case States.enter_pas:
+                    pas = text;
+                    if (usr != null && usr.NickName == login && usr.Psw == pas)
+                    {
+                        login = pas = null;
+                        St = States.login;
+                        string welcome1 = "Приветствуем Вас в игре";
+                        botClient.SendTextMessageAsync(chat.Id, welcome1, replyMarkup: LoginOrRegisterInlineKeyboard);
+                    }
+                    else
+                    {
+                        St = States.enter_name;
+                        botClient.SendTextMessageAsync(chat.Id, "Mistake. Try again.");
+                        botClient.SendTextMessageAsync(chat.Id, "", replyMarkup: LoginOrRegisterInlineKeyboard);
+                    }
+                    return false;
+            }
+            return true;
+        }
+        #endregion States
+
+        #region Messages
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns>продолжить выполнение - true, прекратить выполнение - false</returns>
+        private bool MessageMachine(string text)
+        {
+            switch (text)
+            {
+                case "/start":
+                    St = States.start;
+                    string welcome = "Добро пожаловать " + chat.FirstName + " " + chat.LastName;
+                    botClient.SendTextMessageAsync(chat.Id, welcome, replyMarkup: LoginOrRegisterInlineKeyboard);
+                    return false;
+
+                default:
+                    botClient.SendTextMessageAsync(chat.Id, "Sorry, error in the Bot", replyMarkup: new ReplyKeyboardRemove());
+                    return false;
+            }
+        }
+        #endregion Messages
 
         private void BotClient_OnMessageReceived(object sender, MessageEventArgs e)
         {
@@ -70,36 +153,12 @@ namespace TestBot
             }
             if (e.Message.Type == MessageType.Text)
             {
-                BotDB.Usr usr = null;
-                string login = null;
-                string pas = null;
-
-                switch (St)
+                bool cont = StateMachine(e.Message.Text.Trim());
+                if (!cont)
                 {
-                    case States.enter_name:
-                        login = e.Message.Text.Trim();
-                        usr = botDb.GetUserByLogin(login);
-                        St = States.enter_pas;
-                        botClient.SendTextMessageAsync(chat.Id, "Enter your password");
-                        return;
-
-                    case States.enter_pas:
-                        pas = e.Message.Text.Trim();
-                        if (usr != null && usr.nickName == login && usr.psw == pas)
-                        {
-                            login = pas = null;
-                            St = States.login;
-                            string welcome1 = "Приветствуем Вас в игре";
-                            botClient.SendTextMessageAsync(chat.Id, welcome1, replyMarkup: LoginOrRegisterInlineKeyboard);
-                        }
-                        else
-                        {
-                            St = States.enter_name;
-                            botClient.SendTextMessageAsync(chat.Id, "Mistake. Try again.");
-                            botClient.SendTextMessageAsync(chat.Id, "", replyMarkup: LoginOrRegisterInlineKeyboard);
-                        }
-                        return;
+                    return;
                 }
+
                 switch (e.Message.Text)
                 {
                     #region start
@@ -121,7 +180,7 @@ namespace TestBot
 
         private async void BotOnCallbackQueryReceived(object sender, CallbackQueryEventArgs callbackQueryEventArgs)
         {
-            var callbackQuery = callbackQueryEventArgs.CallbackQuery;
+            CallbackQuery callbackQuery = callbackQueryEventArgs.CallbackQuery;
             switch (callbackQuery.Data)
             {
                 case LoginCommand:
@@ -135,22 +194,6 @@ namespace TestBot
                 default:
                     break;
             }
-        }
-
-        private void BotOnChosenInlineResultReceived(object sender, ChosenInlineResultEventArgs chosenInlineResultEventArgs)
-        {
-            textBox1.Text += $"Received inline result: {chosenInlineResultEventArgs.ChosenInlineResult.ResultId}";
-        }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-            botClient.StartReceiving(Array.Empty<UpdateType>());
-            botClient.OnMessage += BotClient_OnMessageReceived;
-            botClient.OnMessageEdited += BotClient_OnMessageReceived;
-            botClient.OnCallbackQuery += BotOnCallbackQueryReceived;
-            botClient.OnInlineQuery += BotOnInlineQueryReceived;
-            botClient.OnInlineResultChosen += BotOnChosenInlineResultReceived;
-            botClient.OnReceiveError += BotOnReceiveError;
         }
     }
 }

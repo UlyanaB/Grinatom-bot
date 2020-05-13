@@ -37,6 +37,10 @@ namespace ConsoleApp1
 
         public TheBot()
         {
+            botClient = new TelegramBotClient(token);
+            // new BotLinq();
+            botDb = new BotDB();
+
             botClient.OnMessage += BotClient_OnMessageReceived;
             botClient.OnMessageEdited += BotClient_OnMessageReceived;
             botClient.OnCallbackQuery += BotOnCallbackQueryReceived;
@@ -46,9 +50,6 @@ namespace ConsoleApp1
 
             botClient.StartReceiving(Array.Empty<UpdateType>());
 
-            // new BotLinq();
-            botClient = new TelegramBotClient(token);
-            botDb = new BotDB();
         }
 
         private void BotOnReceiveError(object sender, ReceiveErrorEventArgs e)
@@ -59,11 +60,6 @@ namespace ConsoleApp1
         private void BotOnInlineQueryReceived(object sender, InlineQueryEventArgs e)
         {
             throw new NotImplementedException();
-        }
-
-        private void Button1_Click(object sender, EventArgs e)
-        {
-            botClient.SendTextMessageAsync(chat.Id, "456");
         }
 
         private void BotClient_OnMessageReceived(object sender, MessageEventArgs e)
