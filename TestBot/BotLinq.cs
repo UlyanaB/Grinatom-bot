@@ -16,13 +16,13 @@ namespace TestBot
         {
             [Column(DbType = "Int NOT NULL IDENTITY", IsPrimaryKey = true, IsDbGenerated = true, CanBeNull = false)]
             public int Id { get; set; }
-
+            
             [Column(Name = "ord_numb", DbType = "Int NOT NULL", CanBeNull = false)]
             public int OrdNumb { get; set; }
-
-            [Column(Name = "ask_txt", DbType = "Varchar(1000) NOT NULL", CanBeNull = false)]
-            public int AskTxt { get; set; }
-
+            
+            [Column(Name = "ask_txt", DbType = "Varchar(1000)", CanBeNull = true)]
+            public string AskTxt { get; set; }
+            
         }
 
         [Table(Name = "Ans")]
@@ -38,10 +38,10 @@ namespace TestBot
             public char Ind { get; set; }
 
             [Column(Name = "true_ind", DbType = "char(1) NOT NULL", CanBeNull = false)]
-            public int TrueInd { get; set; }
+            public char TrueInd { get; set; }
 
             [Column(Name = "ans_txt", DbType = "varchar(500) NOT NULL", CanBeNull = false)]
-            public int AnsTxt { get; set; }
+            public string AnsTxt { get; set; }
 
         }
 
@@ -82,9 +82,10 @@ namespace TestBot
             return ask;
         }
 
-        internal Dictionary<char,Ans> GetAnsByAsk(Ask ask)
+        internal IEnumerable<Ans> GetAnsByAsk(Ask ask)
         {
-            Dictionary<char, Ans> ans = data.GetTable<Ans>().Where(x => x.IdAsk == ask.Id).ToDictionary(x => x.Ind, x => x);
+            //Dictionary<char, Ans> ans = data.GetTable<Ans>().Where(x => x.IdAsk == ask.Id).ToDictionary(x => x.Ind, x => x);
+            IEnumerable<Ans> ans = data.GetTable<Ans>().Where(x => x.IdAsk == ask.Id).OrderBy(x => x.Ind);
             return ans;
         }
     }

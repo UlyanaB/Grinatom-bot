@@ -36,9 +36,8 @@ namespace TestBot
                                                                                         }
                                                                             });
         private States St = States.none;
-        //private BotDB botDb;
         private BotLinq botLinq;
-
+        private Question question;
         private BotLinq.Usr usr = null;
         private string login = null;
         private string pas = null;
@@ -49,7 +48,7 @@ namespace TestBot
             InitializeComponent();
 
             botLinq = new BotLinq();
-            //botDb = new BotDB();
+            question = new Question(botLinq);
             botClient = new TelegramBotClient(token);
         }
 
@@ -165,7 +164,8 @@ namespace TestBot
                     case "/start":
                         St = States.start;
                         string welcome = "Добро пожаловать " + chat.FirstName + " " + chat.LastName;
-                        botClient.SendTextMessageAsync(chat.Id, welcome, replyMarkup: LoginOrRegisterInlineKeyboard);
+                        InlineKeyboardMarkup ikm = question.CreateInlineKeyboard(1);
+                        botClient.SendTextMessageAsync(chat.Id, welcome, replyMarkup: ikm);
                         break;
                     #endregion start
 
