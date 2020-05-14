@@ -47,7 +47,9 @@ namespace TestBot
                     .Select (x => new[] 
                                 { InlineKeyboardButton.WithCallbackData(
                                                                         x.Ind.ToString() + ") " + x.AnsTxt, 
-                                                                        x.TrueInd.ToString()
+                                                                        x.TrueInd.ToString().ToUpper() == "Y" 
+                                                                            ? Form1.YesCmd
+                                                                            : Form1.NoCmd
                                                                        )
                                 }
                             );

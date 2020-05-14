@@ -11,6 +11,8 @@ namespace TestBot
 {
     internal class BotLinq
     {
+        #region DB description
+
         [Table(Name = "Ask")]
         internal class Ask
         {
@@ -44,19 +46,8 @@ namespace TestBot
             public string AnsTxt { get; set; }
 
         }
-
-        [Table(Name = "usr")]
-        internal class Usr
-        {
-            [Column(DbType = "Int NOT NULL IDENTITY", IsPrimaryKey = true, IsDbGenerated = true, CanBeNull = false)]
-            public int Id { get; set; }
-
-            [Column(Name = "nick_name", DbType = "Varchar(50) NOT NULL", CanBeNull = false)]
-            public string NickName { get; set; }
-
-            [Column(DbType = "Varchar(50) NOT NULL", CanBeNull = false)]
-            public string Psw { get; set; }
-        }
+        
+        #endregion DB description
 
         private const string connectionString = @"Data Source = LocalHost; Initial Catalog = TelegramBot; Integrated Security = True";
 
@@ -65,26 +56,26 @@ namespace TestBot
         internal BotLinq()
         {
             data = new DataContext(connectionString);
-            //Table<Usr> users = data.GetTable<Usr>();
-            //users.InsertOnSubmit(new Usr() { NickName = "Vbn", Psw = "159" });
-            //data.SubmitChanges();
         }
 
-        internal Usr GetUserByLogin(string login)
-        {
-            Usr usr = data.GetTable<Usr>().FirstOrDefault(x => x.NickName == login);
-            return usr;
-        }
-
+        /// <summary>
+        /// вернуть вопрос по номеру
+        /// </summary>
+        /// <param name="ordNumb">номер вопроса</param>
+        /// <returns>вопрос по номеру</returns>
         internal Ask GetAskByOrd(int ordNumb)
         {
             Ask ask = data.GetTable<Ask>().FirstOrDefault(x => x.OrdNumb == ordNumb);
             return ask;
         }
 
+        /// <summary>
+        /// вернутиь ответы по вопросу
+        /// </summary>
+        /// <param name="ask">вопрос</param>
+        /// <returns>ответы</returns>
         internal IEnumerable<Ans> GetAnsByAsk(Ask ask)
         {
-            //Dictionary<char, Ans> ans = data.GetTable<Ans>().Where(x => x.IdAsk == ask.Id).ToDictionary(x => x.Ind, x => x);
             IEnumerable<Ans> ans = data.GetTable<Ans>().Where(x => x.IdAsk == ask.Id).OrderBy(x => x.Ind);
             return ans;
         }

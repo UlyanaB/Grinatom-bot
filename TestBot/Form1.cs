@@ -22,8 +22,11 @@ namespace TestBot
     {
         private const string token = "1211113358:AAEhRzhwrlNt2JL_13p9hrdUe9IjW7Ms6AQ";
 
+        #region Predefined keyboard
         private const string ContCmd = "/ContinueCommand";
         private const string ExitCmd = "/ExitCommand";
+        internal const string NoCmd = "/NoCommand";
+        internal const string YesCmd = "/YesCommand";
 
         private static readonly KeyValuePair<string, string> StartCommand 
                                                                 = new KeyValuePair<string, string>("Начать", ContCmd);
@@ -54,12 +57,15 @@ namespace TestBot
                                                           }
                                                 }
                                         );
+        #endregion Predefined keyboard
 
         private ITelegramBotClient botClient = null;
         private Chat chat = null;
-        private States St = States.none;
         private BotLinq botLinq;
         private Question question;
+        private int AskNumb = 0;    // вопросов задано
+        private int TrueNumb = 0;   // правильных ответов
+        private int OrdNumb = 0;    // текущий вопрос
 
         #region Init Bot
         public Form1()
@@ -102,42 +108,24 @@ namespace TestBot
         }
         #endregion Not implemented
 
-        #region Messages
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="text"></param>
-        /// <returns>продолжить выполнение - true, прекратить выполнение - false</returns>
-        private bool MessageMachine(string text)
+        private async void BotClient_OnMessageReceived(object sender, MessageEventArgs e)
         {
-            switch (text)
-            {
-                case "/start":
-                    string welcome = "Добро пожаловать " + chat.FirstName + " " + chat.LastName;
-                    botClient.SendTextMessageAsync(chat.Id, welcome, replyMarkup: StartOrExitInlineKeyboard);
-                    return false;
-
-                default:
-                    botClient.SendTextMessageAsync(chat.Id, "Извините, ошибка в боте", replyMarkup: new ReplyKeyboardRemove());
-                    return false;
-            }
-        }
-        #endregion Messages
-
-        private void BotClient_OnMessageReceived(object sender, MessageEventArgs e)
-        {
-            bool cont = false;
-
             if (chat == null)
             {
-                chat = e.Message.Chat; 
+                chat = e.Message.Chat;
             }
             if (e.Message.Type == MessageType.Text)
             {
-                cont = MessageMachine(e.Message.Text);
-                if (!cont)
+                switch (e.Message.Text)
                 {
-                    return;
+                    case "/start":
+                        string welcome = "Добро пожаловать " + chat.FirstName + " " + chat.LastName;
+                        await botClient.SendTextMessageAsync(chat.Id, welcome, replyMarkup: StartOrExitInlineKeyboard);
+                        return;
+
+                    default:
+                        await botClient.SendTextMessageAsync(chat.Id, "Извините, ошибка в боте", replyMarkup: new ReplyKeyboardRemove());
+                        return;
                 }
             }
         }
@@ -148,9 +136,19 @@ namespace TestBot
             switch (callbackQuery.Data)
             {
                 case ContCmd:
-                    string header = question.CreateHeader(1);
-                    InlineKeyboardMarkup ikm = question.CreateInlineKeyboard(1);
+                    string header = question.CreateHeader(++OrdNumb);
+                    InlineKeyboardMarkup ikm = question.CreateInlineKeyboard(OrdNumb);
                     await botClient.SendTextMessageAsync(chat.Id, header, replyMarkup: ikm);
+                    break;
+
+                case YesCmd:
+                    string trAns = string.Format("Правильный ответ! ( {0} из {1} )", ++TrueNumb, ++AskNumb);
+                    await botClient.SendTextMessageAsync(chat.Id, trAns, replyMarkup: ContinueOrExitInlineKeyboard);
+                    break;
+
+                case NoCmd:
+                    string flsAns = string.Format("Вы ошиблись ( {0} из {1} )", TrueNumb, ++AskNumb);
+                    await botClient.SendTextMessageAsync(chat.Id, flsAns, replyMarkup: ContinueOrExitInlineKeyboard);
                     break;
 
                 case ExitCmd:
