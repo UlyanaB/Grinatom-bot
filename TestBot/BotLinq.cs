@@ -79,5 +79,15 @@ namespace TestBot
             IEnumerable<Ans> ans = data.GetTable<Ans>().Where(x => x.IdAsk == ask.Id).OrderBy(x => x.Ind);
             return ans;
         }
+
+        /// <summary>
+        /// дать список номеров вопрос
+        /// </summary>
+        /// <returns>список номеров вопрос</returns>
+        internal IList<int> GetAskList()
+        {
+            List<int> lst = data.GetTable<Ask>().Select(x => x.OrdNumb).ToList();
+            return lst;
+        }
     }
 }
