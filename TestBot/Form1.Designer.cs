@@ -1,6 +1,6 @@
 ﻿namespace TestBot
 {
-    partial class Form1
+    partial class BotForm
     {
         /// <summary>
         /// Required designer variable.

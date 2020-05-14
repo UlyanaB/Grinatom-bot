@@ -18,7 +18,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TestBot
 {
-    public partial class Form1 : Form
+    public partial class BotForm : Form
     {
         private const string token = "1211113358:AAEhRzhwrlNt2JL_13p9hrdUe9IjW7Ms6AQ";
 
@@ -68,7 +68,7 @@ namespace TestBot
         private int OrdNumb = 0;    // текущий вопрос
 
         #region Init Bot
-        public Form1()
+        public BotForm()
         {
             InitializeComponent();
 
