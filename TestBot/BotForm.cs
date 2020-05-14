@@ -57,15 +57,25 @@ namespace TestBot
                                                           }
                                                 }
                                         );
+        private static readonly InlineKeyboardMarkup ExitInlineKeyboard
+            = new InlineKeyboardMarkup(
+                                            new[]
+                                                {
+                                                    new []
+                                                          {
+                                                            InlineKeyboardButton.WithCallbackData(ExitCommand.Key, ExitCommand.Value),
+                                                          }
+                                                }
+                                        );
         #endregion Predefined keyboard
 
         private ITelegramBotClient botClient = null;
         private Chat chat = null;
         private BotLinq botLinq;
         private Question question;
+
         private int AskNumb = 0;    // вопросов задано
         private int TrueNumb = 0;   // правильных ответов
-        private int OrdNumb = 0;    // текущий вопрос
 
         #region Init Bot
         public BotForm()
@@ -136,18 +146,26 @@ namespace TestBot
             switch (callbackQuery.Data)
             {
                 case ContCmd:
-                    string header = question.CreateHeader(++OrdNumb);
-                    InlineKeyboardMarkup ikm = question.CreateInlineKeyboard(OrdNumb);
+                    int numb = question.GetNextNumb();
+                    if (numb == -1)
+                    {
+                        await botClient.SendTextMessageAsync(chat.Id, "У нас больше нет вопросов", 
+                                                                replyMarkup: ExitInlineKeyboard);
+                        break;
+                    }
+                    string header = question.CreateHeader(numb);
+                    InlineKeyboardMarkup ikm = question.CreateInlineKeyboard(numb);
+                    ++AskNumb;
                     await botClient.SendTextMessageAsync(chat.Id, header, replyMarkup: ikm);
                     break;
 
                 case YesCmd:
-                    string trAns = string.Format("Правильный ответ! ( {0} из {1} )", ++TrueNumb, ++AskNumb);
+                    string trAns = string.Format("Правильный ответ! ( {0} из {1} )", ++TrueNumb, AskNumb);
                     await botClient.SendTextMessageAsync(chat.Id, trAns, replyMarkup: ContinueOrExitInlineKeyboard);
                     break;
 
                 case NoCmd:
-                    string flsAns = string.Format("Вы ошиблись ( {0} из {1} )", TrueNumb, ++AskNumb);
+                    string flsAns = string.Format("Вы ошиблись ( {0} из {1} )", TrueNumb, AskNumb);
                     await botClient.SendTextMessageAsync(chat.Id, flsAns, replyMarkup: ContinueOrExitInlineKeyboard);
                     break;
 

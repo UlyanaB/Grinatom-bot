@@ -81,9 +81,9 @@ namespace TestBot
         }
 
         /// <summary>
-        /// дать список номеров вопрос
+        /// дать список номеров вопросов
         /// </summary>
-        /// <returns>список номеров вопрос</returns>
+        /// <returns>список номеров вопросов</returns>
         internal IList<int> GetAskList()
         {
             List<int> lst = data.GetTable<Ask>().Select(x => x.OrdNumb).ToList();

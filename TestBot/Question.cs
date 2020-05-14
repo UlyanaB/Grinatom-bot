@@ -16,10 +16,29 @@ namespace TestBot
     internal class Question
     {
         private BotLinq BotLnq;
+        private readonly IList<int> AskNumbLst = null;
+        private readonly Random random = new Random();
 
         internal Question(BotLinq botLinq)
         {
             BotLnq = botLinq;
+            AskNumbLst = botLinq.GetAskList();
+        }
+
+        /// <summary>
+        /// получить номер следующего вопроса
+        /// </summary>
+        /// <returns>номер следующего вопроса, если вопросов больше нет то возвращает -1</returns>
+        internal int GetNextNumb()
+        {
+            if (AskNumbLst.Count == 0)
+            {
+                return -1;
+            }
+            int r = random.Next(AskNumbLst.Count);
+            int nextNumb = AskNumbLst[r];
+            AskNumbLst.RemoveAt(r);
+            return nextNumb;
         }
 
         /// <summary>
