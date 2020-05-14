@@ -22,25 +22,44 @@ namespace TestBot
     {
         private const string token = "1211113358:AAEhRzhwrlNt2JL_13p9hrdUe9IjW7Ms6AQ";
 
-        private const string LoginCommand = "Login";
-        private const string RegisterCommand = "Register";
+        private const string ContCmd = "/ContinueCommand";
+        private const string ExitCmd = "/ExitCommand";
+
+        private static readonly KeyValuePair<string, string> StartCommand 
+                                                                = new KeyValuePair<string, string>("Начать", ContCmd);
+        private static readonly KeyValuePair<string, string> ContinueCommand 
+                                                                = new KeyValuePair<string, string>("Продолжить", ContCmd);
+        private static readonly KeyValuePair<string, string> ExitCommand        
+                                                                = new KeyValuePair<string, string>("Выйти", ExitCmd);
+
+        private static readonly InlineKeyboardMarkup StartOrExitInlineKeyboard 
+            = new InlineKeyboardMarkup  (
+                                            new[]
+                                                {
+                                                    new [] 
+                                                          {
+                                                            InlineKeyboardButton.WithCallbackData(StartCommand.Key, StartCommand.Value),
+                                                            InlineKeyboardButton.WithCallbackData(ExitCommand.Key, ExitCommand.Value),
+                                                          }
+                                                }
+                                        );
+        private static readonly InlineKeyboardMarkup ContinueOrExitInlineKeyboard
+            = new InlineKeyboardMarkup(
+                                            new[]
+                                                {
+                                                    new []
+                                                          {
+                                                            InlineKeyboardButton.WithCallbackData(ContinueCommand.Key, ContinueCommand.Value),
+                                                            InlineKeyboardButton.WithCallbackData(ExitCommand.Key, ExitCommand.Value),
+                                                          }
+                                                }
+                                        );
 
         private ITelegramBotClient botClient = null;
         private Chat chat = null;
-        private InlineKeyboardMarkup LoginOrRegisterInlineKeyboard = new InlineKeyboardMarkup(new[]
-                                                                            {
-                                                                                new [] // first row
-                                                                                        {
-                                                                                            InlineKeyboardButton.WithCallbackData(LoginCommand),
-                                                                                            InlineKeyboardButton.WithCallbackData(RegisterCommand),
-                                                                                        }
-                                                                            });
         private States St = States.none;
         private BotLinq botLinq;
         private Question question;
-        private BotLinq.Usr usr = null;
-        private string login = null;
-        private string pas = null;
 
         #region Init Bot
         public Form1()
@@ -83,44 +102,6 @@ namespace TestBot
         }
         #endregion Not implemented
 
-        #region States
-        /// <summary>
-        /// Конечный автомат
-        /// </summary>
-        /// <param name="text"></param>
-        /// <returns>продолжить выполнение - true, прекратить выполнение - false</returns>
-        private bool StateMachine(string text)
-        {
-            switch (St)
-            {
-                case States.enter_name:
-                    login = text;
-                    usr = botLinq.GetUserByLogin(login);
-                    St = States.enter_pas;
-                    botClient.SendTextMessageAsync(chat.Id, "Enter your password");
-                    return false;
-
-                case States.enter_pas:
-                    pas = text;
-                    if (usr != null && usr.NickName == login && usr.Psw == pas)
-                    {
-                        login = pas = null;
-                        St = States.login;
-                        string welcome1 = "Приветствуем Вас в игре";
-                        botClient.SendTextMessageAsync(chat.Id, welcome1, replyMarkup: LoginOrRegisterInlineKeyboard);
-                    }
-                    else
-                    {
-                        St = States.enter_name;
-                        botClient.SendTextMessageAsync(chat.Id, "Mistake. Try again.");
-                        botClient.SendTextMessageAsync(chat.Id, "", replyMarkup: LoginOrRegisterInlineKeyboard);
-                    }
-                    return false;
-            }
-            return true;
-        }
-        #endregion States
-
         #region Messages
         /// <summary>
         /// 
@@ -132,13 +113,12 @@ namespace TestBot
             switch (text)
             {
                 case "/start":
-                    St = States.start;
                     string welcome = "Добро пожаловать " + chat.FirstName + " " + chat.LastName;
-                    botClient.SendTextMessageAsync(chat.Id, welcome, replyMarkup: LoginOrRegisterInlineKeyboard);
+                    botClient.SendTextMessageAsync(chat.Id, welcome, replyMarkup: StartOrExitInlineKeyboard);
                     return false;
 
                 default:
-                    botClient.SendTextMessageAsync(chat.Id, "Sorry, error in the Bot", replyMarkup: new ReplyKeyboardRemove());
+                    botClient.SendTextMessageAsync(chat.Id, "Извините, ошибка в боте", replyMarkup: new ReplyKeyboardRemove());
                     return false;
             }
         }
@@ -146,34 +126,18 @@ namespace TestBot
 
         private void BotClient_OnMessageReceived(object sender, MessageEventArgs e)
         {
+            bool cont = false;
+
             if (chat == null)
             {
                 chat = e.Message.Chat; 
             }
             if (e.Message.Type == MessageType.Text)
             {
-                bool cont = StateMachine(e.Message.Text.Trim());
+                cont = MessageMachine(e.Message.Text);
                 if (!cont)
                 {
                     return;
-                }
-
-                switch (e.Message.Text)
-                {
-                    #region start
-                    case "/start":
-                        St = States.start;
-                        string welcome = "Добро пожаловать " + chat.FirstName + " " + chat.LastName;
-                        InlineKeyboardMarkup ikm = question.CreateInlineKeyboard(1);
-                        botClient.SendTextMessageAsync(chat.Id, welcome, replyMarkup: ikm);
-                        break;
-                    #endregion start
-
-                    #region default
-                    default:
-                        botClient.SendTextMessageAsync(chat.Id, "Sorry, error in the Bot", replyMarkup: new ReplyKeyboardRemove());
-                        break;
-                    #endregion default
                 }
             }
         }
@@ -183,15 +147,18 @@ namespace TestBot
             CallbackQuery callbackQuery = callbackQueryEventArgs.CallbackQuery;
             switch (callbackQuery.Data)
             {
-                case LoginCommand:
-                    St = States.enter_name;
-                    await botClient.SendTextMessageAsync(chat.Id, "Enter your login");
+                case ContCmd:
+                    string header = question.CreateHeader(1);
+                    InlineKeyboardMarkup ikm = question.CreateInlineKeyboard(1);
+                    await botClient.SendTextMessageAsync(chat.Id, header, replyMarkup: ikm);
                     break;
 
-                case RegisterCommand:
+                case ExitCmd:
+                    await botClient.SendTextMessageAsync(chat.Id, "Заходите еще");
                     break;
 
                 default:
+                    await botClient.SendTextMessageAsync(chat.Id, "Извините, ошибка в боте", replyMarkup: new ReplyKeyboardRemove());
                     break;
             }
         }

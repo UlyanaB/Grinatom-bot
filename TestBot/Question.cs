@@ -22,13 +22,35 @@ namespace TestBot
             BotLnq = botLinq;
         }
 
+        /// <summary>
+        /// возвращает текст вопроса
+        /// </summary>
+        /// <param name="ordNumb">номер вопроса</param>
+        /// <returns>текст вопроса</returns>
+        internal string CreateHeader(int ordNumb)
+        {
+            BotLinq.Ask ask = BotLnq.GetAskByOrd(ordNumb);
+            return ask.AskTxt;
+        }
+
+        /// <summary>
+        /// возвращает варианты ответов
+        /// </summary>
+        /// <param name="ordNumb">номер вопроса</param>
+        /// <returns>варианты ответов</returns>
         internal InlineKeyboardMarkup CreateInlineKeyboard(int ordNumb)
         {
             BotLinq.Ask ask = BotLnq.GetAskByOrd(ordNumb);
             IEnumerable<InlineKeyboardButton[]> ikm 
                 = BotLnq
                     .GetAnsByAsk(ask)
-                    .Select(x => new[] { InlineKeyboardButton.WithCallbackData(x.Ind.ToString() + " " + x.AnsTxt) });
+                    .Select (x => new[] 
+                                { InlineKeyboardButton.WithCallbackData(
+                                                                        x.Ind.ToString() + ") " + x.AnsTxt, 
+                                                                        x.TrueInd.ToString()
+                                                                       )
+                                }
+                            );
             InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(ikm.ToArray());
             return inlineKeyboard;
         }
