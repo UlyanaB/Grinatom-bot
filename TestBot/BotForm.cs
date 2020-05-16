@@ -25,6 +25,8 @@ namespace TestBot
         #region Predefined keyboard
         private const string ContCmd    = "/ContinueCommand";
         private const string ExitCmd    = "/ExitCommand";
+        private const string TimeoutCmd = "/TimeoutCommand";
+        private const string SkipCmd   = "/SkipCommand";
         internal const string NoCmd     = "/NoCommand";
         internal const string YesCmd    = "/YesCommand";
 
@@ -32,8 +34,10 @@ namespace TestBot
                                                                 = new KeyValuePair<string, string>("Начать", ContCmd);
         private static readonly KeyValuePair<string, string> ContinueCommand 
                                                                 = new KeyValuePair<string, string>("Продолжить", ContCmd);
-        private static readonly KeyValuePair<string, string> ExitCommand        
+        private static readonly KeyValuePair<string, string> ExitCommand
                                                                 = new KeyValuePair<string, string>("Выйти", ExitCmd);
+        internal static readonly KeyValuePair<string, string> SkipCommand
+                                                                = new KeyValuePair<string, string>("Пропустить", SkipCmd);
 
         private static readonly InlineKeyboardMarkup StartOrExitInlineKeyboard 
             = new InlineKeyboardMarkup  (
@@ -75,7 +79,8 @@ namespace TestBot
         private Question question;
         private InlineKeyboardMarkup ikm;
         private Guid guid = Guid.Empty;
-
+        private System.Timers.Timer timer;
+        private States st;
         private int AskNumb = 0;    // вопросов задано
         private int TrueNumb = 0;   // правильных ответов
 
@@ -87,10 +92,13 @@ namespace TestBot
             botLinq = new BotLinq();
             question = new Question(botLinq);
             botClient = new TelegramBotClient(token);
-        }
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
+            timer = new System.Timers.Timer();
+            timer.Enabled = false;
+            timer.Interval = 60 * 1000;
+            timer.Elapsed += Timer_Elapsed;
+            timer.AutoReset = true;
+
             botClient.OnMessage += BotClient_OnMessageReceived;
             botClient.OnMessageEdited += BotClient_OnMessageReceived;
             botClient.OnCallbackQuery += BotOnCallbackQueryReceived;
@@ -99,6 +107,16 @@ namespace TestBot
             botClient.OnReceiveError += BotOnReceiveError;
 
             botClient.StartReceiving(Array.Empty<UpdateType>());
+
+            st = States.None;
+        }
+
+        private async void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            timer.Enabled = false;
+            guid = Guid.NewGuid();
+            string flsAns = string.Format("Вы не успели ответить ( {0} из {1} )", TrueNumb, AskNumb);
+            await botClient.SendTextMessageAsync(chat.Id, flsAns, replyMarkup: ContinueOrExitInlineKeyboard);
         }
         #endregion Init Bot
 
@@ -116,7 +134,6 @@ namespace TestBot
         private void BotOnChosenInlineResultReceived(object sender, ChosenInlineResultEventArgs chosenInlineResultEventArgs)
         {
             throw new NotImplementedException();
-            //textBox1.Text += $"Received inline result: {chosenInlineResultEventArgs.ChosenInlineResult.ResultId}";
         }
         #endregion Not implemented
 
@@ -131,12 +148,9 @@ namespace TestBot
                 switch (e.Message.Text)
                 {
                     case "/start":
+                        st = States.Start;
                         string welcome = "Добро пожаловать " + chat.FirstName + " " + chat.LastName;
                         await botClient.SendTextMessageAsync(chat.Id, welcome, replyMarkup: StartOrExitInlineKeyboard);
-                        return;
-
-                    default:
-                        await botClient.SendTextMessageAsync(chat.Id, "Извините, ошибка в боте", replyMarkup: new ReplyKeyboardRemove());
                         return;
                 }
             }
@@ -144,6 +158,11 @@ namespace TestBot
 
         private async void BotOnCallbackQueryReceived(object sender, CallbackQueryEventArgs callbackQueryEventArgs)
         {
+            if (st == States.Stop)
+            {
+                return;
+            }
+
             CallbackQuery callbackQuery = callbackQueryEventArgs.CallbackQuery;
             string[] dataParts = callbackQuery.Data.Split(':');
             if ((dataParts.Length == 1) || (dataParts.Length == 2 && dataParts[1] == guid.ToString()))
@@ -163,6 +182,7 @@ namespace TestBot
                         ikm = question.CreateInlineKeyboard(numb, guid);
                         ++AskNumb;
                         await botClient.SendTextMessageAsync(chat.Id, header, replyMarkup: ikm);
+                        timer.Enabled = true;
                         break;
 
                     case YesCmd:
@@ -175,7 +195,13 @@ namespace TestBot
                         await botClient.SendTextMessageAsync(chat.Id, flsAns, replyMarkup: ContinueOrExitInlineKeyboard);
                         break;
 
+                    case SkipCmd:
+                        string skpAns = string.Format("Вы отказались от ответа ( {0} из {1} )", TrueNumb, AskNumb);
+                        await botClient.SendTextMessageAsync(chat.Id, skpAns, replyMarkup: ContinueOrExitInlineKeyboard);
+                        break;
+
                     case ExitCmd:
+                        st = States.Stop;
                         await botClient.SendTextMessageAsync(chat.Id, "Заходите еще");
                         break;
 

@@ -73,7 +73,9 @@ namespace TestBot
                                                                        )
                                 }
                             );
-            InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(ikm.ToArray());
+            List<InlineKeyboardButton[]> ikmL = ikm.ToList();
+            ikmL.Add(new[] { InlineKeyboardButton.WithCallbackData(BotForm.SkipCommand.Key, BotForm.SkipCommand.Value) });
+            InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(ikmL.ToArray());
             return inlineKeyboard;
         }
     }
