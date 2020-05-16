@@ -19,13 +19,13 @@ namespace TestBot
         private readonly IList<int> AskNumbLst = null;
         private readonly Random random = new Random();
 
-        private static readonly KeyValuePair<string, string> StartCommand
+        private readonly KeyValuePair<string, string> StartCommand
                                                                 = new KeyValuePair<string, string>("Начать", BotForm.ContCmd);
-        private static readonly KeyValuePair<string, string> ContinueCommand
+        private readonly KeyValuePair<string, string> ContinueCommand
                                                                 = new KeyValuePair<string, string>("Продолжить", BotForm.ContCmd);
-        private static readonly KeyValuePair<string, string> ExitCommand
+        private readonly KeyValuePair<string, string> ExitCommand
                                                                 = new KeyValuePair<string, string>("Выйти", BotForm.ExitCmd);
-        private static readonly KeyValuePair<string, string> SkipCommand
+        private readonly KeyValuePair<string, string> SkipCommand
                                                                 = new KeyValuePair<string, string>("Пропустить", BotForm.SkipCmd);
 
         internal Question(BotLinq botLinq)

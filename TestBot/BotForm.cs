@@ -66,14 +66,6 @@ namespace TestBot
 
             st = States.None;
         }
-
-        private async void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-        {
-            timer.Enabled = false;
-            guid = Guid.NewGuid();
-            string flsAns = string.Format("Вы не успели ответить ( {0} из {1} )", TrueNumb, AskNumb);
-            await botClient.SendTextMessageAsync(chat.Id, flsAns, replyMarkup: question.CreateContinueOrExitInlineKeyboard(guid));
-        }
         #endregion Init Bot
 
         #region Not implemented
@@ -92,6 +84,14 @@ namespace TestBot
             throw new NotImplementedException();
         }
         #endregion Not implemented
+
+        private async void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            timer.Enabled = false;
+            guid = Guid.NewGuid();
+            string flsAns = string.Format("Вы не успели ответить ( {0} из {1} )", TrueNumb, AskNumb);
+            await botClient.SendTextMessageAsync(chat.Id, flsAns, replyMarkup: question.CreateContinueOrExitInlineKeyboard(guid));
+        }
 
         private async void BotClient_OnMessageReceived(object sender, MessageEventArgs e)
         {
