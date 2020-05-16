@@ -115,6 +115,7 @@ namespace TestBot
 
         private async void BotOnCallbackQueryReceived(object sender, CallbackQueryEventArgs callbackQueryEventArgs)
         {
+            timer.Enabled = false;
             if (st == States.Stop)
             {
                 return;
