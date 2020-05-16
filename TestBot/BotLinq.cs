@@ -70,7 +70,7 @@ namespace TestBot
         }
 
         /// <summary>
-        /// вернутиь ответы по вопросу
+        /// вернуть ответы по вопросу
         /// </summary>
         /// <param name="ask">вопрос</param>
         /// <returns>ответы</returns>

@@ -57,7 +57,7 @@ namespace TestBot
         /// </summary>
         /// <param name="ordNumb">номер вопроса</param>
         /// <returns>варианты ответов</returns>
-        internal InlineKeyboardMarkup CreateInlineKeyboard(int ordNumb)
+        internal InlineKeyboardMarkup CreateInlineKeyboard(int ordNumb, Guid guid)
         {
             BotLinq.Ask ask = BotLnq.GetAskByOrd(ordNumb);
             IEnumerable<InlineKeyboardButton[]> ikm 
@@ -65,10 +65,11 @@ namespace TestBot
                     .GetAnsByAsk(ask)
                     .Select (x => new[] 
                                 { InlineKeyboardButton.WithCallbackData(
-                                                                        x.Ind.ToString() + ") " + x.AnsTxt, 
-                                                                        x.TrueInd.ToString().ToUpper() == "Y" 
+                                                                        x.Ind.ToString() + ") " + x.AnsTxt,
+                                                                        (x.TrueInd.ToString().ToUpper() == "Y" 
                                                                             ? BotForm.YesCmd
-                                                                            : BotForm.NoCmd
+                                                                            : BotForm.NoCmd)
+                                                                         + ":" + guid.ToString()
                                                                        )
                                 }
                             );

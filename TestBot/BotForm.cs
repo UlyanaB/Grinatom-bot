@@ -23,10 +23,10 @@ namespace TestBot
         private const string token = "1211113358:AAEhRzhwrlNt2JL_13p9hrdUe9IjW7Ms6AQ";
 
         #region Predefined keyboard
-        private const string ContCmd = "/ContinueCommand";
-        private const string ExitCmd = "/ExitCommand";
-        internal const string NoCmd = "/NoCommand";
-        internal const string YesCmd = "/YesCommand";
+        private const string ContCmd    = "/ContinueCommand";
+        private const string ExitCmd    = "/ExitCommand";
+        internal const string NoCmd     = "/NoCommand";
+        internal const string YesCmd    = "/YesCommand";
 
         private static readonly KeyValuePair<string, string> StartCommand 
                                                                 = new KeyValuePair<string, string>("Начать", ContCmd);
@@ -73,6 +73,8 @@ namespace TestBot
         private Chat chat = null;
         private BotLinq botLinq;
         private Question question;
+        private InlineKeyboardMarkup ikm;
+        private Guid guid = Guid.Empty;
 
         private int AskNumb = 0;    // вопросов задано
         private int TrueNumb = 0;   // правильных ответов
@@ -143,39 +145,44 @@ namespace TestBot
         private async void BotOnCallbackQueryReceived(object sender, CallbackQueryEventArgs callbackQueryEventArgs)
         {
             CallbackQuery callbackQuery = callbackQueryEventArgs.CallbackQuery;
-            switch (callbackQuery.Data)
+            string[] dataParts = callbackQuery.Data.Split(':');
+            if ((dataParts.Length == 1) || (dataParts.Length == 2 && dataParts[1] == guid.ToString()))
             {
-                case ContCmd:
-                    int numb = question.GetNextNumb();
-                    if (numb == -1)
-                    {
-                        await botClient.SendTextMessageAsync(chat.Id, "У нас больше нет вопросов", 
-                                                                replyMarkup: ExitInlineKeyboard);
+                guid = Guid.NewGuid();
+                switch (dataParts[0])
+                {
+                    case ContCmd:
+                        int numb = question.GetNextNumb();
+                        if (numb == -1)
+                        {
+                            await botClient.SendTextMessageAsync(chat.Id, "У нас больше нет вопросов",
+                                                                    replyMarkup: ExitInlineKeyboard);
+                            break;
+                        }
+                        string header = question.CreateHeader(numb);
+                        ikm = question.CreateInlineKeyboard(numb, guid);
+                        ++AskNumb;
+                        await botClient.SendTextMessageAsync(chat.Id, header, replyMarkup: ikm);
                         break;
-                    }
-                    string header = question.CreateHeader(numb);
-                    InlineKeyboardMarkup ikm = question.CreateInlineKeyboard(numb);
-                    ++AskNumb;
-                    await botClient.SendTextMessageAsync(chat.Id, header, replyMarkup: ikm);
-                    break;
 
-                case YesCmd:
-                    string trAns = string.Format("Правильный ответ! ( {0} из {1} )", ++TrueNumb, AskNumb);
-                    await botClient.SendTextMessageAsync(chat.Id, trAns, replyMarkup: ContinueOrExitInlineKeyboard);
-                    break;
+                    case YesCmd:
+                        string trAns = string.Format("Правильный ответ! ( {0} из {1} )", ++TrueNumb, AskNumb);
+                        await botClient.SendTextMessageAsync(chat.Id, trAns, replyMarkup: ContinueOrExitInlineKeyboard);
+                        break;
 
-                case NoCmd:
-                    string flsAns = string.Format("Вы ошиблись ( {0} из {1} )", TrueNumb, AskNumb);
-                    await botClient.SendTextMessageAsync(chat.Id, flsAns, replyMarkup: ContinueOrExitInlineKeyboard);
-                    break;
+                    case NoCmd:
+                        string flsAns = string.Format("Вы ошиблись ( {0} из {1} )", TrueNumb, AskNumb);
+                        await botClient.SendTextMessageAsync(chat.Id, flsAns, replyMarkup: ContinueOrExitInlineKeyboard);
+                        break;
 
-                case ExitCmd:
-                    await botClient.SendTextMessageAsync(chat.Id, "Заходите еще");
-                    break;
+                    case ExitCmd:
+                        await botClient.SendTextMessageAsync(chat.Id, "Заходите еще");
+                        break;
 
-                default:
-                    await botClient.SendTextMessageAsync(chat.Id, "Извините, ошибка в боте", replyMarkup: new ReplyKeyboardRemove());
-                    break;
+                    default:
+                        await botClient.SendTextMessageAsync(chat.Id, "Извините, ошибка в боте", replyMarkup: new ReplyKeyboardRemove());
+                        break;
+                }
             }
         }
     }
