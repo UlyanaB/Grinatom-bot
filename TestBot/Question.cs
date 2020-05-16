@@ -19,6 +19,15 @@ namespace TestBot
         private readonly IList<int> AskNumbLst = null;
         private readonly Random random = new Random();
 
+        private static readonly KeyValuePair<string, string> StartCommand
+                                                                = new KeyValuePair<string, string>("Начать", BotForm.ContCmd);
+        private static readonly KeyValuePair<string, string> ContinueCommand
+                                                                = new KeyValuePair<string, string>("Продолжить", BotForm.ContCmd);
+        private static readonly KeyValuePair<string, string> ExitCommand
+                                                                = new KeyValuePair<string, string>("Выйти", BotForm.ExitCmd);
+        private static readonly KeyValuePair<string, string> SkipCommand
+                                                                = new KeyValuePair<string, string>("Пропустить", BotForm.SkipCmd);
+
         internal Question(BotLinq botLinq)
         {
             BotLnq = botLinq;
@@ -57,16 +66,16 @@ namespace TestBot
         /// </summary>
         /// <param name="ordNumb">номер вопроса</param>
         /// <returns>варианты ответов</returns>
-        internal InlineKeyboardMarkup CreateInlineKeyboard(int ordNumb, Guid guid)
+        internal InlineKeyboardMarkup CreateAnsInlineKeyboard(int ordNumb, Guid guid)
         {
             BotLinq.Ask ask = BotLnq.GetAskByOrd(ordNumb);
-            IEnumerable<InlineKeyboardButton[]> ikm 
+            IEnumerable<InlineKeyboardButton[]> ikm
                 = BotLnq
                     .GetAnsByAsk(ask)
-                    .Select (x => new[] 
-                                { InlineKeyboardButton.WithCallbackData(
+                    .Select(x => new[]
+                               { InlineKeyboardButton.WithCallbackData(
                                                                         x.Ind.ToString() + ") " + x.AnsTxt,
-                                                                        (x.TrueInd.ToString().ToUpper() == "Y" 
+                                                                        (x.TrueInd.ToString().ToUpper() == "Y"
                                                                             ? BotForm.YesCmd
                                                                             : BotForm.NoCmd)
                                                                          + ":" + guid.ToString()
@@ -74,9 +83,58 @@ namespace TestBot
                                 }
                             );
             List<InlineKeyboardButton[]> ikmL = ikm.ToList();
-            ikmL.Add(new[] { InlineKeyboardButton.WithCallbackData(BotForm.SkipCommand.Key, BotForm.SkipCommand.Value) });
+            ikmL.Add(new[] { InlineKeyboardButton.WithCallbackData(SkipCommand.Key, SkipCommand.Value + ":" + guid.ToString()) });
             InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(ikmL.ToArray());
             return inlineKeyboard;
         }
+
+        internal InlineKeyboardMarkup CreateContinueOrExitInlineKeyboard(Guid guid)
+        {
+            InlineKeyboardMarkup ContinueOrExitInlineKeyboard
+                = new InlineKeyboardMarkup(
+                    new[]
+                        {
+                            new []
+                                {
+                                    InlineKeyboardButton.WithCallbackData(ContinueCommand.Key, ContinueCommand.Value + ":" + guid.ToString()),
+                                        InlineKeyboardButton.WithCallbackData(ExitCommand.Key, ExitCommand.Value + ":" + guid.ToString()),
+                                }
+                        }
+                                            );
+            return ContinueOrExitInlineKeyboard;
+        }
+
+        internal InlineKeyboardMarkup CreateStartOrExitInlineKeyboard(Guid guid)
+        {
+            InlineKeyboardMarkup StartOrExitInlineKeyboard
+                = new InlineKeyboardMarkup(
+                    new[]
+                        {
+                            new []
+                                {
+                                    InlineKeyboardButton.WithCallbackData(StartCommand.Key, StartCommand.Value + ":" + guid.ToString()),
+                                    InlineKeyboardButton.WithCallbackData(ExitCommand.Key, ExitCommand.Value + ":" + guid.ToString()),
+                                }
+                        }
+                                        );
+            return StartOrExitInlineKeyboard;
+        }
+
+        internal InlineKeyboardMarkup CreateExitInlineKeyboard(Guid guid)
+        {
+            InlineKeyboardMarkup ExitInlineKeyboard
+                = new InlineKeyboardMarkup(
+                    new[]
+                        {
+                            new []
+                                {
+                                    InlineKeyboardButton.WithCallbackData(ExitCommand.Key, ExitCommand.Value + ":" + guid.ToString()),
+                                }
+                        }
+                                        );
+            return ExitInlineKeyboard;
+        }
+
     }
 }
+

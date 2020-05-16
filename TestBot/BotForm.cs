@@ -22,56 +22,12 @@ namespace TestBot
     {
         private const string token = "1211113358:AAEhRzhwrlNt2JL_13p9hrdUe9IjW7Ms6AQ";
 
-        #region Predefined keyboard
-        private const string ContCmd    = "/ContinueCommand";
-        private const string ExitCmd    = "/ExitCommand";
-        private const string TimeoutCmd = "/TimeoutCommand";
-        private const string SkipCmd   = "/SkipCommand";
+        internal const string ContCmd    = "/ContinueCommand";
+        internal const string ExitCmd    = "/ExitCommand";
+        internal const string TimeoutCmd = "/TimeoutCommand";
+        internal const string SkipCmd   = "/SkipCommand";
         internal const string NoCmd     = "/NoCommand";
         internal const string YesCmd    = "/YesCommand";
-
-        private static readonly KeyValuePair<string, string> StartCommand 
-                                                                = new KeyValuePair<string, string>("Начать", ContCmd);
-        private static readonly KeyValuePair<string, string> ContinueCommand 
-                                                                = new KeyValuePair<string, string>("Продолжить", ContCmd);
-        private static readonly KeyValuePair<string, string> ExitCommand
-                                                                = new KeyValuePair<string, string>("Выйти", ExitCmd);
-        internal static readonly KeyValuePair<string, string> SkipCommand
-                                                                = new KeyValuePair<string, string>("Пропустить", SkipCmd);
-
-        private static readonly InlineKeyboardMarkup StartOrExitInlineKeyboard 
-            = new InlineKeyboardMarkup  (
-                                            new[]
-                                                {
-                                                    new [] 
-                                                          {
-                                                            InlineKeyboardButton.WithCallbackData(StartCommand.Key, StartCommand.Value),
-                                                            InlineKeyboardButton.WithCallbackData(ExitCommand.Key, ExitCommand.Value),
-                                                          }
-                                                }
-                                        );
-        private static readonly InlineKeyboardMarkup ContinueOrExitInlineKeyboard
-            = new InlineKeyboardMarkup(
-                                            new[]
-                                                {
-                                                    new []
-                                                          {
-                                                            InlineKeyboardButton.WithCallbackData(ContinueCommand.Key, ContinueCommand.Value),
-                                                            InlineKeyboardButton.WithCallbackData(ExitCommand.Key, ExitCommand.Value),
-                                                          }
-                                                }
-                                        );
-        private static readonly InlineKeyboardMarkup ExitInlineKeyboard
-            = new InlineKeyboardMarkup(
-                                            new[]
-                                                {
-                                                    new []
-                                                          {
-                                                            InlineKeyboardButton.WithCallbackData(ExitCommand.Key, ExitCommand.Value),
-                                                          }
-                                                }
-                                        );
-        #endregion Predefined keyboard
 
         private ITelegramBotClient botClient = null;
         private Chat chat = null;
@@ -116,7 +72,7 @@ namespace TestBot
             timer.Enabled = false;
             guid = Guid.NewGuid();
             string flsAns = string.Format("Вы не успели ответить ( {0} из {1} )", TrueNumb, AskNumb);
-            await botClient.SendTextMessageAsync(chat.Id, flsAns, replyMarkup: ContinueOrExitInlineKeyboard);
+            await botClient.SendTextMessageAsync(chat.Id, flsAns, replyMarkup: question.CreateContinueOrExitInlineKeyboard(guid));
         }
         #endregion Init Bot
 
@@ -149,8 +105,9 @@ namespace TestBot
                 {
                     case "/start":
                         st = States.Start;
+                        guid = Guid.NewGuid();
                         string welcome = "Добро пожаловать " + chat.FirstName + " " + chat.LastName;
-                        await botClient.SendTextMessageAsync(chat.Id, welcome, replyMarkup: StartOrExitInlineKeyboard);
+                        await botClient.SendTextMessageAsync(chat.Id, welcome, replyMarkup: question.CreateStartOrExitInlineKeyboard(guid));
                         return;
                 }
             }
@@ -175,11 +132,11 @@ namespace TestBot
                         if (numb == -1)
                         {
                             await botClient.SendTextMessageAsync(chat.Id, "У нас больше нет вопросов",
-                                                                    replyMarkup: ExitInlineKeyboard);
+                                                                    replyMarkup: question.CreateExitInlineKeyboard(guid));
                             break;
                         }
                         string header = question.CreateHeader(numb);
-                        ikm = question.CreateInlineKeyboard(numb, guid);
+                        ikm = question.CreateAnsInlineKeyboard(numb, guid);
                         ++AskNumb;
                         await botClient.SendTextMessageAsync(chat.Id, header, replyMarkup: ikm);
                         timer.Enabled = true;
@@ -187,17 +144,17 @@ namespace TestBot
 
                     case YesCmd:
                         string trAns = string.Format("Правильный ответ! ( {0} из {1} )", ++TrueNumb, AskNumb);
-                        await botClient.SendTextMessageAsync(chat.Id, trAns, replyMarkup: ContinueOrExitInlineKeyboard);
+                        await botClient.SendTextMessageAsync(chat.Id, trAns, replyMarkup: question.CreateContinueOrExitInlineKeyboard(guid));
                         break;
 
                     case NoCmd:
                         string flsAns = string.Format("Вы ошиблись ( {0} из {1} )", TrueNumb, AskNumb);
-                        await botClient.SendTextMessageAsync(chat.Id, flsAns, replyMarkup: ContinueOrExitInlineKeyboard);
+                        await botClient.SendTextMessageAsync(chat.Id, flsAns, replyMarkup: question.CreateContinueOrExitInlineKeyboard(guid));
                         break;
 
                     case SkipCmd:
                         string skpAns = string.Format("Вы отказались от ответа ( {0} из {1} )", TrueNumb, AskNumb);
-                        await botClient.SendTextMessageAsync(chat.Id, skpAns, replyMarkup: ContinueOrExitInlineKeyboard);
+                        await botClient.SendTextMessageAsync(chat.Id, skpAns, replyMarkup: question.CreateContinueOrExitInlineKeyboard(guid));
                         break;
 
                     case ExitCmd:
@@ -206,7 +163,7 @@ namespace TestBot
                         break;
 
                     default:
-                        await botClient.SendTextMessageAsync(chat.Id, "Извините, ошибка в боте", replyMarkup: new ReplyKeyboardRemove());
+                        await botClient.SendTextMessageAsync(chat.Id, "Извините, ошибка в боте");
                         break;
                 }
             }
