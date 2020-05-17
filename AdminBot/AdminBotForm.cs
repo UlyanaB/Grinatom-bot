@@ -28,6 +28,7 @@ namespace AdminBot
         internal const string NextCmd = "/NextCommand";
         internal const string PrevCmd = "/PrevCommand";
         internal const string LastCmd = "/LastCommand";
+        internal const string NumberCmd = "/NumberCommand";
 
         internal const string ExitCmd = "/ExitCommand";
         internal const string BackCmd = "/BackCommand";
@@ -39,13 +40,15 @@ namespace AdminBot
         private Guid guid = Guid.Empty;
         private States st;
         private Question question;
+        private BotLinq botLinq;
 
         public AdminBotForm()
         {
             InitializeComponent();
 
             botClient = new TelegramBotClient(token);
-            question = new Question();
+            botLinq = new BotLinq();
+            question = new Question(botLinq);
 
             botClient.OnMessage += BotClient_OnMessageReceived;
             botClient.OnMessageEdited += BotClient_OnMessageReceived;
@@ -77,6 +80,8 @@ namespace AdminBot
 
         private async void BotOnCallbackQueryReceived(object sender, CallbackQueryEventArgs e)
         {
+            int askNumb = -1;
+
             if (st == States.Stop)
             {
                 return;
@@ -84,9 +89,14 @@ namespace AdminBot
 
             CallbackQuery callbackQuery = e.CallbackQuery;
             string[] dataParts = callbackQuery.Data.Split(':');
-            if ((dataParts.Length == 1) || (dataParts.Length == 2 && dataParts[1] == guid.ToString()))
+            if (dataParts.Length == 2 && dataParts[1] == guid.ToString())
             {
                 guid = Guid.NewGuid();
+                if (dataParts[0].StartsWith(NumberCmd))
+                {
+                    askNumb = int.Parse(dataParts[0].Substring(NumberCmd.Length));
+                    dataParts[0] = NumberCmd;
+                }
                 switch (dataParts[0])
                 {
                     case AddCmd:
@@ -100,12 +110,15 @@ namespace AdminBot
                         break;
 
                     case ListCmd:
-                        // вывести список вопросов
                         await botClient.SendTextMessageAsync(chat.Id, "Выберите вопрос", replyMarkup: question.CreateListInlineKeyboard(guid));
                         break;
 
                     case EnterNumbCmd:
                         await botClient.SendTextMessageAsync(chat.Id, "Введите номер вопроса");
+                        break;
+
+                    case NumberCmd:
+                        await botClient.SendTextMessageAsync(chat.Id, botLinq.GetAskByOrd(askNumb).AskTxt);
                         break;
 
                     case BackCmd:

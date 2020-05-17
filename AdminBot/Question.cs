@@ -26,21 +26,26 @@ namespace AdminBot
         private readonly KeyValuePair<string, string> ListCommand
                                                                 = new KeyValuePair<string, string>("Вывести список", AdminBotForm.ListCmd);
         private readonly KeyValuePair<string, string> FirstCommand
-                                                                = new KeyValuePair<string, string>("Следующие ...", AdminBotForm.FirstCmd);
+                                                                = new KeyValuePair<string, string>("Первые ...", AdminBotForm.FirstCmd);
         private readonly KeyValuePair<string, string> NextCommand
                                                                 = new KeyValuePair<string, string>("Следующие ...", AdminBotForm.NextCmd);
         private readonly KeyValuePair<string, string> PrevCommand
                                                                 = new KeyValuePair<string, string>("Предыдущие ...", AdminBotForm.PrevCmd);
         private readonly KeyValuePair<string, string> LastCommand
-                                                                = new KeyValuePair<string, string>("Предыдущие ...", AdminBotForm.LastCmd);
+                                                                = new KeyValuePair<string, string>("Последние ...", AdminBotForm.LastCmd);
 
         private readonly KeyValuePair<string, string> ExitCommand
                                                                 = new KeyValuePair<string, string>("Выйти", AdminBotForm.ExitCmd);
         private readonly KeyValuePair<string, string> BackCommand
                                                                 = new KeyValuePair<string, string>("Назад", AdminBotForm.BackCmd);
+        private readonly KeyValuePair<string, string> NumberCommand
+                                                                = new KeyValuePair<string, string>("Номер", AdminBotForm.NumberCmd);
 
-        internal Question()
+        private BotLinq BotLnq;
+
+        internal Question(BotLinq botLinq)
         {
+            BotLnq = botLinq;
         }
 
         internal InlineKeyboardMarkup CreateEditInlineKeyboard(Guid guid)
@@ -88,25 +93,24 @@ namespace AdminBot
 
         internal InlineKeyboardMarkup CreateListInlineKeyboard(Guid guid)
         {
-            InlineKeyboardMarkup GetInlineKeyboard
-                = new InlineKeyboardMarkup(
-                    new[]
-                        {
-                            new []
+            IEnumerable<InlineKeyboardButton[]> nmb
+                = BotLnq.GetAsks(0, 20)
+                            .Select(x => new[]{ InlineKeyboardButton.WithCallbackData(x.Value, NumberCommand.Value + x.Key + ":" + guid.ToString())});
+            List<InlineKeyboardButton[]> nmbL = nmb.ToList();
+            nmbL.Add(new[]
                                 {
                                     InlineKeyboardButton.WithCallbackData(FirstCommand.Key, FirstCommand.Value + ":" + guid.ToString()),
                                     InlineKeyboardButton.WithCallbackData(PrevCommand.Key, PrevCommand.Value + ":" + guid.ToString()),
                                     InlineKeyboardButton.WithCallbackData(NextCommand.Key, NextCommand.Value + ":" + guid.ToString()),
                                     InlineKeyboardButton.WithCallbackData(LastCommand.Key, LastCommand.Value + ":" + guid.ToString()),
-                                },
-                            new []
+                                });
+            nmbL.Add(new[]
                                 {
                                     InlineKeyboardButton.WithCallbackData(BackCommand.Key, BackCommand.Value + ":" + guid.ToString()),
                                     InlineKeyboardButton.WithCallbackData(ExitCommand.Key, ExitCommand.Value + ":" + guid.ToString()),
-                                },
-                        }
-                                            );
-            return GetInlineKeyboard;
+                                });
+            InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(nmbL.ToArray());
+            return inlineKeyboard;
         }
 
     }
