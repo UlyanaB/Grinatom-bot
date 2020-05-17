@@ -19,12 +19,20 @@ namespace AdminBot
         //Bor159Admin_bot
         private const string token = "992461240:AAEAZGMF0LT5XDQRLxHz3KXbGYCQG31r0QA";
 
-        internal const string ContCmd = "/ContinueCommand";
+        internal const string AddCmd = "/AddCommand";
+        internal const string EditCmd = "/EditCommand";
+        internal const string DeleteCmd = "/DeleteCommand";
+        internal const string ListCmd = "/ListCommand";
+        internal const string EnterNumbCmd = "/EnterNumbCommand";
+        internal const string FirstCmd = "/FirstCommand";
+        internal const string NextCmd = "/NextCommand";
+        internal const string PrevCmd = "/PrevCommand";
+        internal const string LastCmd = "/LastCommand";
+
         internal const string ExitCmd = "/ExitCommand";
+        internal const string BackCmd = "/BackCommand";
+
         internal const string TimeoutCmd = "/TimeoutCommand";
-        internal const string SkipCmd = "/SkipCommand";
-        internal const string NoCmd = "/NoCommand";
-        internal const string YesCmd = "/YesCommand";
 
         private ITelegramBotClient botClient = null;
         private Chat chat = null;
@@ -50,6 +58,7 @@ namespace AdminBot
 
         }
 
+        #region not implemented
         private void BotOnReceiveError(object sender, ReceiveErrorEventArgs e)
         {
             throw new NotImplementedException();
@@ -64,10 +73,55 @@ namespace AdminBot
         {
             throw new NotImplementedException();
         }
+        #endregion not implemented
 
-        private void BotOnCallbackQueryReceived(object sender, CallbackQueryEventArgs e)
+        private async void BotOnCallbackQueryReceived(object sender, CallbackQueryEventArgs e)
         {
-            throw new NotImplementedException();
+            if (st == States.Stop)
+            {
+                return;
+            }
+
+            CallbackQuery callbackQuery = e.CallbackQuery;
+            string[] dataParts = callbackQuery.Data.Split(':');
+            if ((dataParts.Length == 1) || (dataParts.Length == 2 && dataParts[1] == guid.ToString()))
+            {
+                guid = Guid.NewGuid();
+                switch (dataParts[0])
+                {
+                    case AddCmd:
+                        break;
+
+                    case EditCmd:
+                        await botClient.SendTextMessageAsync(chat.Id, "Выберите вопрос", replyMarkup: question.CreateGetInlineKeyboard(guid));
+                        break;
+
+                    case DeleteCmd:
+                        break;
+
+                    case ListCmd:
+                        // вывести список вопросов
+                        await botClient.SendTextMessageAsync(chat.Id, "Выберите вопрос", replyMarkup: question.CreateListInlineKeyboard(guid));
+                        break;
+
+                    case EnterNumbCmd:
+                        await botClient.SendTextMessageAsync(chat.Id, "Введите номер вопроса");
+                        break;
+
+                    case BackCmd:
+                        await botClient.SendTextMessageAsync(chat.Id, "Вы отказались от этого меню", replyMarkup: question.CreateEditInlineKeyboard(guid));
+                        break;
+
+                    case ExitCmd:
+                        st = States.Stop;
+                        await botClient.SendTextMessageAsync(chat.Id, "Сеанс завершен");
+                        break;
+
+                    default:
+                        await botClient.SendTextMessageAsync(chat.Id, "Извините, ошибка в боте");
+                        break;
+                }
+            }
         }
 
         private async void BotClient_OnMessageReceived(object sender, MessageEventArgs e)
@@ -84,7 +138,7 @@ namespace AdminBot
                         st = States.Start;
                         guid = Guid.NewGuid();
                         string welcome = "Добро пожаловать " + chat.FirstName + " " + chat.LastName;
-                        await botClient.SendTextMessageAsync(chat.Id, welcome, replyMarkup: question.CreateStartOrExitInlineKeyboard(guid));
+                        await botClient.SendTextMessageAsync(chat.Id, welcome, replyMarkup: question.CreateEditInlineKeyboard(guid));
                         return;
                 }
             }

@@ -15,64 +15,98 @@ namespace AdminBot
 {
     internal class Question
     {
-        private readonly KeyValuePair<string, string> StartCommand
-                                                                = new KeyValuePair<string, string>("Начать", AdminBotForm.ContCmd);
-        private readonly KeyValuePair<string, string> ContinueCommand
-                                                                = new KeyValuePair<string, string>("Продолжить", AdminBotForm.ContCmd);
+        private readonly KeyValuePair<string, string> AddCommand
+                                                                = new KeyValuePair<string, string>("Добавить", AdminBotForm.AddCmd);
+        private readonly KeyValuePair<string, string> EditCommand
+                                                                = new KeyValuePair<string, string>("Редактировать", AdminBotForm.EditCmd);
+        private readonly KeyValuePair<string, string> DeleteCommand
+                                                                = new KeyValuePair<string, string>("Удалить", AdminBotForm.DeleteCmd);
+        private readonly KeyValuePair<string, string> EnterNumbCommand
+                                                                = new KeyValuePair<string, string>("Введите номер вопроса", AdminBotForm.EnterNumbCmd);
+        private readonly KeyValuePair<string, string> ListCommand
+                                                                = new KeyValuePair<string, string>("Вывести список", AdminBotForm.ListCmd);
+        private readonly KeyValuePair<string, string> FirstCommand
+                                                                = new KeyValuePair<string, string>("Следующие ...", AdminBotForm.FirstCmd);
+        private readonly KeyValuePair<string, string> NextCommand
+                                                                = new KeyValuePair<string, string>("Следующие ...", AdminBotForm.NextCmd);
+        private readonly KeyValuePair<string, string> PrevCommand
+                                                                = new KeyValuePair<string, string>("Предыдущие ...", AdminBotForm.PrevCmd);
+        private readonly KeyValuePair<string, string> LastCommand
+                                                                = new KeyValuePair<string, string>("Предыдущие ...", AdminBotForm.LastCmd);
+
         private readonly KeyValuePair<string, string> ExitCommand
                                                                 = new KeyValuePair<string, string>("Выйти", AdminBotForm.ExitCmd);
-        private readonly KeyValuePair<string, string> SkipCommand
-                                                                = new KeyValuePair<string, string>("Пропустить", AdminBotForm.SkipCmd);
+        private readonly KeyValuePair<string, string> BackCommand
+                                                                = new KeyValuePair<string, string>("Назад", AdminBotForm.BackCmd);
 
         internal Question()
         {
         }
 
-        internal InlineKeyboardMarkup CreateContinueOrExitInlineKeyboard(Guid guid)
+        internal InlineKeyboardMarkup CreateEditInlineKeyboard(Guid guid)
         {
-            InlineKeyboardMarkup ContinueOrExitInlineKeyboard
+            InlineKeyboardMarkup EditInlineKeyboard
                 = new InlineKeyboardMarkup(
                     new[]
                         {
                             new []
                                 {
-                                    InlineKeyboardButton.WithCallbackData(ContinueCommand.Key, ContinueCommand.Value + ":" + guid.ToString()),
-                                        InlineKeyboardButton.WithCallbackData(ExitCommand.Key, ExitCommand.Value + ":" + guid.ToString()),
-                                }
+                                    InlineKeyboardButton.WithCallbackData(AddCommand.Key, AddCommand.Value + ":" + guid.ToString()),
+                                    InlineKeyboardButton.WithCallbackData(EditCommand.Key, EditCommand.Value + ":" + guid.ToString()),
+                                    InlineKeyboardButton.WithCallbackData(DeleteCommand.Key, DeleteCommand.Value + ":" + guid.ToString()),
+                                },
+                            new []
+                                {
+                                    InlineKeyboardButton.WithCallbackData(BackCommand.Key, BackCommand.Value + ":" + guid.ToString()),
+                                    InlineKeyboardButton.WithCallbackData(ExitCommand.Key, ExitCommand.Value + ":" + guid.ToString()),
+                                },
                         }
                                             );
-            return ContinueOrExitInlineKeyboard;
+            return EditInlineKeyboard;
         }
 
-        internal InlineKeyboardMarkup CreateStartOrExitInlineKeyboard(Guid guid)
+        internal InlineKeyboardMarkup CreateGetInlineKeyboard(Guid guid)
         {
-            InlineKeyboardMarkup StartOrExitInlineKeyboard
+            InlineKeyboardMarkup GetInlineKeyboard
                 = new InlineKeyboardMarkup(
                     new[]
                         {
                             new []
                                 {
-                                    InlineKeyboardButton.WithCallbackData(StartCommand.Key, StartCommand.Value + ":" + guid.ToString()),
+                                    InlineKeyboardButton.WithCallbackData(ListCommand.Key, ListCommand.Value + ":" + guid.ToString()),
+                                    InlineKeyboardButton.WithCallbackData(EnterNumbCommand.Key, EnterNumbCommand.Value + ":" + guid.ToString()),
+                                },
+                            new []
+                                {
+                                    InlineKeyboardButton.WithCallbackData(BackCommand.Key, BackCommand.Value + ":" + guid.ToString()),
                                     InlineKeyboardButton.WithCallbackData(ExitCommand.Key, ExitCommand.Value + ":" + guid.ToString()),
-                                }
+                                },
                         }
-                                        );
-            return StartOrExitInlineKeyboard;
+                                            );
+            return GetInlineKeyboard;
         }
 
-        internal InlineKeyboardMarkup CreateExitInlineKeyboard(Guid guid)
+        internal InlineKeyboardMarkup CreateListInlineKeyboard(Guid guid)
         {
-            InlineKeyboardMarkup ExitInlineKeyboard
+            InlineKeyboardMarkup GetInlineKeyboard
                 = new InlineKeyboardMarkup(
                     new[]
                         {
                             new []
                                 {
+                                    InlineKeyboardButton.WithCallbackData(FirstCommand.Key, FirstCommand.Value + ":" + guid.ToString()),
+                                    InlineKeyboardButton.WithCallbackData(PrevCommand.Key, PrevCommand.Value + ":" + guid.ToString()),
+                                    InlineKeyboardButton.WithCallbackData(NextCommand.Key, NextCommand.Value + ":" + guid.ToString()),
+                                    InlineKeyboardButton.WithCallbackData(LastCommand.Key, LastCommand.Value + ":" + guid.ToString()),
+                                },
+                            new []
+                                {
+                                    InlineKeyboardButton.WithCallbackData(BackCommand.Key, BackCommand.Value + ":" + guid.ToString()),
                                     InlineKeyboardButton.WithCallbackData(ExitCommand.Key, ExitCommand.Value + ":" + guid.ToString()),
-                                }
+                                },
                         }
-                                        );
-            return ExitInlineKeyboard;
+                                            );
+            return GetInlineKeyboard;
         }
 
     }
