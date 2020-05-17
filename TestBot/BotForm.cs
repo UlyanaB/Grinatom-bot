@@ -19,7 +19,8 @@ using Telegram.Bot.Types.ReplyMarkups;
 namespace TestBot
 {
     public partial class BotForm : Form
-    {
+    {                                 
+        //Bor159_bot
         private const string token = "1211113358:AAEhRzhwrlNt2JL_13p9hrdUe9IjW7Ms6AQ";
 
         internal const string ContCmd    = "/ContinueCommand";

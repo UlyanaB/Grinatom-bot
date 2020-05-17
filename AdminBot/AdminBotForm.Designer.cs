@@ -1,6 +1,6 @@
 ﻿namespace AdminBot
 {
-    partial class Form1
+    partial class AdminBotForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,10 +28,22 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            this.SuspendLayout();
+            // 
+            // AdminBotForm
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Text = "Form1";
+            this.ClientSize = new System.Drawing.Size(147, 0);
+            this.MaximizeBox = false;
+            this.MaximumSize = new System.Drawing.Size(163, 38);
+            this.MinimizeBox = false;
+            this.MinimumSize = new System.Drawing.Size(163, 38);
+            this.Name = "AdminBotForm";
+            this.Text = "AdminBotForm";
+            this.WindowState = System.Windows.Forms.FormWindowState.Minimized;
+            this.ResumeLayout(false);
+
         }
 
         #endregion
