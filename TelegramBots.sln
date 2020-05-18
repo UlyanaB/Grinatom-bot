@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestBot", "TestBot\TestBot.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminBot", "AdminBot\AdminBot.csproj", "{945D1C4C-FF92-4810-9D3E-3E5AB4F68040}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAdmin", "WebAdmin\WebAdmin.csproj", "{0890D532-550B-4BD6-A2A3-873D98004B15}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAdmin.Tests", "WebAdmin.Tests\WebAdmin.Tests.csproj", "{D7CF6875-A7D2-4BD7-B7A8-F6ADF59B88C8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{945D1C4C-FF92-4810-9D3E-3E5AB4F68040}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{945D1C4C-FF92-4810-9D3E-3E5AB4F68040}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{945D1C4C-FF92-4810-9D3E-3E5AB4F68040}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0890D532-550B-4BD6-A2A3-873D98004B15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0890D532-550B-4BD6-A2A3-873D98004B15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0890D532-550B-4BD6-A2A3-873D98004B15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0890D532-550B-4BD6-A2A3-873D98004B15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7CF6875-A7D2-4BD7-B7A8-F6ADF59B88C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7CF6875-A7D2-4BD7-B7A8-F6ADF59B88C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7CF6875-A7D2-4BD7-B7A8-F6ADF59B88C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7CF6875-A7D2-4BD7-B7A8-F6ADF59B88C8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
