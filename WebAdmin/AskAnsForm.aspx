@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="WebForm1.aspx.cs" Inherits="WebAdmin.Models.WebForm1" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="AskAnsForm.aspx.cs" Inherits="WebAdmin.Models.WebForm1" %>
 
 <!DOCTYPE html>
 
