@@ -12,7 +12,7 @@ namespace WebAdmin.Models
         protected void GridView1_SelectedIndexChanging(object sender, GridViewSelectEventArgs e)
         {
             GridView gv = sender as GridView;
-            string w = gv.Rows[e.NewSelectedIndex].Cells[1].Text;
+            string w = gv.Rows[e.NewSelectedIndex].Cells[0].Text;
             SqlDataSourceAns.SelectParameters[0].DefaultValue = w;
         }
     }

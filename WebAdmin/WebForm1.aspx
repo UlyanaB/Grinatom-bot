@@ -57,13 +57,13 @@
                 <asp:Parameter Name="original_ans_txt" Type="String" />
             </UpdateParameters>
         </asp:SqlDataSource>
-        <asp:GridView ID="GridView1" runat="server" AllowPaging="True" AllowSorting="True" AutoGenerateColumns="False" DataKeyNames="Id" DataSourceID="SqlDataSourceAsk" Width="945px" CellPadding="4" ForeColor="#333333" GridLines="None" OnSelectedIndexChanging="GridView1_SelectedIndexChanging">
+        <asp:GridView ID="GridView1" runat="server" AllowPaging="True" AllowSorting="True" AutoGenerateColumns="False" DataKeyNames="Id" DataSourceID="SqlDataSourceAsk" Width="938px" CellPadding="4" ForeColor="#333333" GridLines="None" OnSelectedIndexChanging="GridView1_SelectedIndexChanging">
             <AlternatingRowStyle BackColor="White" />
             <Columns>
-                <asp:CommandField ShowDeleteButton="True" ShowEditButton="True" ShowSelectButton="True" ShowInsertButton="True" />
                 <asp:BoundField DataField="Id" HeaderText="Id" InsertVisible="False" ReadOnly="True" SortExpression="Id" />
                 <asp:BoundField DataField="ask_txt" HeaderText="ask_txt" SortExpression="ask_txt" />
                 <asp:BoundField DataField="ord_numb" HeaderText="ord_numb" SortExpression="ord_numb" />
+                <asp:CommandField ShowDeleteButton="True" ShowEditButton="True" ShowSelectButton="True" InsertVisible="False" />
             </Columns>
             <EditRowStyle BackColor="#2461BF" />
             <FooterStyle BackColor="#507CD1" Font-Bold="True" ForeColor="White" />
@@ -76,15 +76,29 @@
             <SortedDescendingCellStyle BackColor="#E9EBEF" />
             <SortedDescendingHeaderStyle BackColor="#4870BE" />
         </asp:GridView>
-        <asp:GridView ID="GridView2" runat="server" AllowPaging="True" AllowSorting="True" AutoGenerateColumns="False" DataKeyNames="id" DataSourceID="SqlDataSourceAns" Width="942px" CellPadding="4" ForeColor="#333333" GridLines="None">
+        <asp:DetailsView ID="DetailsView1" runat="server" CellPadding="4" DataSourceID="SqlDataSourceAsk" ForeColor="#333333" GridLines="None" Height="50px" Width="936px">
+            <AlternatingRowStyle BackColor="White" />
+            <CommandRowStyle BackColor="#D1DDF1" Font-Bold="True" />
+            <EditRowStyle BackColor="#2461BF" />
+            <FieldHeaderStyle BackColor="#DEE8F5" Font-Bold="True" />
+            <Fields>
+                <asp:CommandField ShowInsertButton="True" />
+            </Fields>
+            <FooterStyle BackColor="#507CD1" Font-Bold="True" ForeColor="White" />
+            <HeaderStyle BackColor="#507CD1" Font-Bold="True" ForeColor="White" />
+            <PagerStyle BackColor="#2461BF" ForeColor="White" HorizontalAlign="Center" />
+            <RowStyle BackColor="#EFF3FB" />
+        </asp:DetailsView>
+        <asp:Label ID="Label1" runat="server" Text="  ___________________________        "></asp:Label>
+        <asp:GridView ID="GridView2" runat="server" AllowPaging="True" AllowSorting="True" AutoGenerateColumns="False" DataKeyNames="id" DataSourceID="SqlDataSourceAns" Width="937px" CellPadding="4" ForeColor="#333333" GridLines="None">
             <AlternatingRowStyle BackColor="White" />
             <Columns>
-                <asp:CommandField ShowDeleteButton="True" ShowEditButton="True" ShowSelectButton="True" ShowInsertButton="True" />
                 <asp:BoundField DataField="id" HeaderText="id" InsertVisible="False" ReadOnly="True" SortExpression="id" />
                 <asp:BoundField DataField="id_ask" HeaderText="id_ask" SortExpression="id_ask" />
                 <asp:BoundField DataField="ind" HeaderText="ind" SortExpression="ind" />
                 <asp:BoundField DataField="true_ind" HeaderText="true_ind" SortExpression="true_ind" />
                 <asp:BoundField DataField="ans_txt" HeaderText="ans_txt" SortExpression="ans_txt" />
+                <asp:CommandField ShowDeleteButton="True" ShowEditButton="True" ShowSelectButton="True" InsertVisible="False" />
             </Columns>
             <EditRowStyle BackColor="#2461BF" />
             <FooterStyle BackColor="#507CD1" Font-Bold="True" ForeColor="White" />
@@ -97,6 +111,19 @@
             <SortedDescendingCellStyle BackColor="#E9EBEF" />
             <SortedDescendingHeaderStyle BackColor="#4870BE" />
         </asp:GridView>
+        <asp:DetailsView ID="DetailsView2" runat="server" CellPadding="4" DataSourceID="SqlDataSourceAns" ForeColor="#333333" GridLines="None" Height="50px" Width="936px">
+            <AlternatingRowStyle BackColor="White" />
+            <CommandRowStyle BackColor="#D1DDF1" Font-Bold="True" />
+            <EditRowStyle BackColor="#2461BF" />
+            <FieldHeaderStyle BackColor="#DEE8F5" Font-Bold="True" />
+            <Fields>
+                <asp:CommandField ShowInsertButton="True" />
+            </Fields>
+            <FooterStyle BackColor="#507CD1" Font-Bold="True" ForeColor="White" />
+            <HeaderStyle BackColor="#507CD1" Font-Bold="True" ForeColor="White" />
+            <PagerStyle BackColor="#2461BF" ForeColor="White" HorizontalAlign="Center" />
+            <RowStyle BackColor="#EFF3FB" />
+        </asp:DetailsView>
     </form>
 </body>
 </html>
