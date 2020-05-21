@@ -9,5 +9,11 @@ namespace WebAdmin.Models
 {
     public partial class WebForm1 : System.Web.UI.Page
     {
+        protected void GridView1_SelectedIndexChanging(object sender, GridViewSelectEventArgs e)
+        {
+            GridView gv = sender as GridView;
+            string w = gv.Rows[e.NewSelectedIndex].Cells[1].Text;
+            SqlDataSourceAns.SelectParameters[0].DefaultValue = w;
+        }
     }
 }
