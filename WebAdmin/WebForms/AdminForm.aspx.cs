@@ -11,7 +11,10 @@ namespace WebAdmin.WebForms
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-
+            if (!LoginForm.Authenticated)
+            {
+                throw new Exception("Forbidden");
+            }
         }
     }
 }

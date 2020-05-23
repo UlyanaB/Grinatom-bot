@@ -11,6 +11,7 @@ namespace WebAdmin
     {
         public static bool menuVisible = false;
         public static bool loginVisible = true;
+        public static bool Authenticated = false;
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -30,9 +31,15 @@ namespace WebAdmin
         protected void Login1_Authenticate(object sender, AuthenticateEventArgs e)
         {
             Login login = sender as Login;
+            
             if (login.UserName == "Zxc" && login.Password == "123")
             {
                 e.Authenticated = true;
+                Authenticated = true;
+            }
+            else
+            {
+                login.FailureText = "Вы ошиблись";
             }
         }
 
@@ -49,6 +56,7 @@ namespace WebAdmin
                 case "Exit":
                     menuVisible = false;
                     loginVisible = true;
+                    Authenticated = false;
                     Page_Load(sender, e);
                     break;
 
