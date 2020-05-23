@@ -9,6 +9,18 @@
 <body>
     <form id="form1" runat="server">
         <div>
+            <asp:Menu ID="Menu1" runat="server" BackColor="#B5C7DE" DynamicHorizontalOffset="2" Font-Names="Verdana" Font-Size="0.8em" ForeColor="#284E98" StaticSubMenuIndent="10px">
+                <DynamicHoverStyle BackColor="#284E98" ForeColor="White" />
+                <DynamicMenuItemStyle HorizontalPadding="5px" VerticalPadding="2px" />
+                <DynamicMenuStyle BackColor="#B5C7DE" />
+                <DynamicSelectedStyle BackColor="#507CD1" />
+                <Items>
+                    <asp:MenuItem NavigateUrl="~/WebForms/LoginForm.aspx" Text="На главную страницу" Value="Up"></asp:MenuItem>
+                </Items>
+                <StaticHoverStyle BackColor="#284E98" ForeColor="White" />
+                <StaticMenuItemStyle HorizontalPadding="5px" VerticalPadding="2px" />
+                <StaticSelectedStyle BackColor="#507CD1" />
+            </asp:Menu>
         </div>
         <asp:SqlDataSource ID="SqlDataSourceAsk" runat="server" ConflictDetection="CompareAllValues" ConnectionString="<%$ ConnectionStrings:TelegramBotConnectionString %>" DeleteCommand="DELETE FROM [Ask] WHERE [Id] = @original_Id AND (([ask_txt] = @original_ask_txt) OR ([ask_txt] IS NULL AND @original_ask_txt IS NULL)) AND [ord_numb] = @original_ord_numb" InsertCommand="INSERT INTO [Ask] ([ask_txt], [ord_numb]) VALUES (@ask_txt, @ord_numb)" OldValuesParameterFormatString="original_{0}" SelectCommand="SELECT * FROM [Ask]" UpdateCommand="UPDATE [Ask] SET [ask_txt] = @ask_txt, [ord_numb] = @ord_numb WHERE [Id] = @original_Id AND (([ask_txt] = @original_ask_txt) OR ([ask_txt] IS NULL AND @original_ask_txt IS NULL)) AND [ord_numb] = @original_ord_numb">
             <DeleteParameters>

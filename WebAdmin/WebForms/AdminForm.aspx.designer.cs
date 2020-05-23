@@ -7,10 +7,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace WebAdmin.Models {
+namespace WebAdmin.WebForms {
     
     
-    public partial class WebForm1 {
+    public partial class AdminForm {
         
         /// <summary>
         /// form1 control.
@@ -31,40 +31,13 @@ namespace WebAdmin.Models {
         protected global::System.Web.UI.WebControls.Menu Menu1;
         
         /// <summary>
-        /// SqlDataSourceAsk control.
+        /// ChangePassword1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.SqlDataSource SqlDataSourceAsk;
-        
-        /// <summary>
-        /// SqlDataSourceAns control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.SqlDataSource SqlDataSourceAns;
-        
-        /// <summary>
-        /// GridView1 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView GridView1;
-        
-        /// <summary>
-        /// DetailsView1 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DetailsView DetailsView1;
+        protected global::System.Web.UI.WebControls.ChangePassword ChangePassword1;
         
         /// <summary>
         /// Label1 control.
@@ -76,21 +49,12 @@ namespace WebAdmin.Models {
         protected global::System.Web.UI.WebControls.Label Label1;
         
         /// <summary>
-        /// GridView2 control.
+        /// CreateUserWizard1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView GridView2;
-        
-        /// <summary>
-        /// DetailsView2 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DetailsView DetailsView2;
+        protected global::System.Web.UI.WebControls.CreateUserWizard CreateUserWizard1;
     }
 }

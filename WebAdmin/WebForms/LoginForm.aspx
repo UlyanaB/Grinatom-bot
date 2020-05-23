@@ -16,8 +16,8 @@
                 <DynamicSelectedStyle BackColor="#507CD1" />
                 <Items>
                     <asp:MenuItem NavigateUrl="~/WebForms/AskAnsForm.aspx" Text="Редактировать вопросы и ответы" Value="EditAskAns"></asp:MenuItem>
-                    <asp:MenuItem Text="Протокол" Value="Log"></asp:MenuItem>
-                    <asp:MenuItem Text="Администрировать пользователей" Value="ToAdminUsers"></asp:MenuItem>
+                    <asp:MenuItem Text="Протокол" Value="Log" NavigateUrl="~/WebForms/UsersAndLogsForm.aspx"></asp:MenuItem>
+                    <asp:MenuItem Text="Администрировать пользователей" Value="ToAdminUsers" NavigateUrl="~/WebForms/AdminForm.aspx"></asp:MenuItem>
                     <asp:MenuItem Text="Выход" Value="Exit"></asp:MenuItem>
                 </Items>
                 <StaticHoverStyle BackColor="#284E98" ForeColor="White" />

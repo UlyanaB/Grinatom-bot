@@ -191,6 +191,8 @@
     <Content Include="Content\bootstrap-theme.min.css.map" />
     <Content Include="Content\bootstrap-theme.css.map" />
     <Content Include="Account\Web.config" />
+    <Content Include="WebForms\AdminForm.aspx" />
+    <Content Include="WebForms\UsersAndLogsForm.aspx" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="WebForms\LoginForm.aspx" />
     <Content Include="WebForms\AskAnsForm.aspx" />
@@ -341,6 +343,13 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="WebForms\AdminForm.aspx.cs">
+      <DependentUpon>AdminForm.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="WebForms\AdminForm.aspx.designer.cs">
+      <DependentUpon>AdminForm.aspx</DependentUpon>
+    </Compile>
     <Compile Include="WebForms\LoginForm.aspx.cs">
       <DependentUpon>LoginForm.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -378,6 +387,13 @@
     </Compile>
     <Compile Include="ViewSwitcher.ascx.designer.cs">
       <DependentUpon>ViewSwitcher.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="WebForms\UsersAndLogsForm.aspx.cs">
+      <DependentUpon>UsersAndLogsForm.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="WebForms\UsersAndLogsForm.aspx.designer.cs">
+      <DependentUpon>UsersAndLogsForm.aspx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
