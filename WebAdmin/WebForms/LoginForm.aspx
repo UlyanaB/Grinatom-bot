@@ -15,7 +15,7 @@
                 <DynamicMenuStyle BackColor="#B5C7DE" />
                 <DynamicSelectedStyle BackColor="#507CD1" />
                 <Items>
-                    <asp:MenuItem NavigateUrl="http://localhost:50992/AskAnsForm" Text="Редактировать вопросы и ответы" Value="EditAskAns"></asp:MenuItem>
+                    <asp:MenuItem NavigateUrl="~/WebForms/AskAnsForm.aspx" Text="Редактировать вопросы и ответы" Value="EditAskAns"></asp:MenuItem>
                     <asp:MenuItem Text="Протокол" Value="Log"></asp:MenuItem>
                     <asp:MenuItem Text="Администрировать пользователей" Value="ToAdminUsers"></asp:MenuItem>
                     <asp:MenuItem Text="Выход" Value="Exit"></asp:MenuItem>

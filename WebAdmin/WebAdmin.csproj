@@ -192,8 +192,8 @@
     <Content Include="Content\bootstrap-theme.css.map" />
     <Content Include="Account\Web.config" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
-    <Content Include="LoginForm.aspx" />
-    <Content Include="AskAnsForm.aspx" />
+    <Content Include="WebForms\LoginForm.aspx" />
+    <Content Include="WebForms\AskAnsForm.aspx" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\jquery-3.3.1.js" />
@@ -341,19 +341,19 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="LoginForm.aspx.cs">
+    <Compile Include="WebForms\LoginForm.aspx.cs">
       <DependentUpon>LoginForm.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="LoginForm.aspx.designer.cs">
+    <Compile Include="WebForms\LoginForm.aspx.designer.cs">
       <DependentUpon>LoginForm.aspx</DependentUpon>
     </Compile>
     <Compile Include="Models\IdentityModels.cs" />
-    <Compile Include="AskAnsForm.aspx.cs">
+    <Compile Include="WebForms\AskAnsForm.aspx.cs">
       <DependentUpon>AskAnsForm.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="AskAnsForm.aspx.designer.cs">
+    <Compile Include="WebForms\AskAnsForm.aspx.designer.cs">
       <DependentUpon>AskAnsForm.aspx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
