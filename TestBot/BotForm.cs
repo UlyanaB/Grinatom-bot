@@ -40,6 +40,7 @@ namespace TestBot
         private States st;
         private int AskNumb = 0;    // вопросов задано
         private int TrueNumb = 0;   // правильных ответов
+        private BotLinq.BotUsers botUsers = null;
 
         #region Init Bot
         public BotForm()
@@ -50,11 +51,8 @@ namespace TestBot
             question = new Question(botLinq);
             botClient = new TelegramBotClient(token);
 
-            timer = new System.Timers.Timer();
-            timer.Enabled = false;
-            timer.Interval = 60 * 1000;
+            timer = new System.Timers.Timer { Enabled = false, Interval = 60 * 1000, AutoReset = true };
             timer.Elapsed += Timer_Elapsed;
-            timer.AutoReset = true;
 
             botClient.OnMessage += BotClient_OnMessageReceived;
             botClient.OnMessageEdited += BotClient_OnMessageReceived;
@@ -99,6 +97,9 @@ namespace TestBot
             if (chat == null)
             {
                 chat = e.Message.Chat;
+                int tlgUserId = e.Message.From.Id;
+                string tlgUserName = e.Message.From.FirstName + " " + e.Message.From.LastName;
+                botUsers = botLinq.AddorUpdateBotUsers(tlgUserId, tlgUserName);
             }
             if (e.Message.Type == MessageType.Text)
             {
@@ -107,7 +108,7 @@ namespace TestBot
                     case "/start":
                         st = States.Start;
                         guid = Guid.NewGuid();
-                        string welcome = "Добро пожаловать " + chat.FirstName + " " + chat.LastName;
+                        string welcome = "Добро пожаловать " + botUsers.TlgUserName;
                         await botClient.SendTextMessageAsync(chat.Id, welcome, replyMarkup: question.CreateStartOrExitInlineKeyboard(guid));
                         return;
                 }
@@ -123,8 +124,9 @@ namespace TestBot
             }
 
             CallbackQuery callbackQuery = callbackQueryEventArgs.CallbackQuery;
+            string x = callbackQuery.Message.Text;
             string[] dataParts = callbackQuery.Data.Split(':');
-            if ((dataParts.Length == 1) || (dataParts.Length == 2 && dataParts[1] == guid.ToString()))
+            if ((dataParts.Length == 2 || dataParts.Length == 3) && dataParts[1] == guid.ToString())
             {
                 guid = Guid.NewGuid();
                 switch (dataParts[0])
@@ -139,23 +141,22 @@ namespace TestBot
                         }
                         string header = question.CreateHeader(numb);
                         ikm = question.CreateAnsInlineKeyboard(numb, guid);
-                        ++AskNumb;
                         await botClient.SendTextMessageAsync(chat.Id, header, replyMarkup: ikm);
                         timer.Enabled = true;
                         break;
 
                     case YesCmd:
-                        string trAns = string.Format("Правильный ответ! ( {0} из {1} )", ++TrueNumb, AskNumb);
+                        string trAns = string.Format("Правильный ответ! ( {0} из {1} )", ++TrueNumb, ++AskNumb);
                         await botClient.SendTextMessageAsync(chat.Id, trAns, replyMarkup: question.CreateContinueOrExitInlineKeyboard(guid));
                         break;
 
                     case NoCmd:
-                        string flsAns = string.Format("Вы ошиблись ( {0} из {1} )", TrueNumb, AskNumb);
+                        string flsAns = string.Format("Вы ошиблись ( {0} из {1} )", TrueNumb, ++AskNumb);
                         await botClient.SendTextMessageAsync(chat.Id, flsAns, replyMarkup: question.CreateContinueOrExitInlineKeyboard(guid));
                         break;
 
                     case SkipCmd:
-                        string skpAns = string.Format("Вы отказались от ответа ( {0} из {1} )", TrueNumb, AskNumb);
+                        string skpAns = string.Format("Вы отказались от ответа ( {0} из {1} )", TrueNumb, ++AskNumb);
                         await botClient.SendTextMessageAsync(chat.Id, skpAns, replyMarkup: question.CreateContinueOrExitInlineKeyboard(guid));
                         break;
 
@@ -167,6 +168,23 @@ namespace TestBot
                     default:
                         await botClient.SendTextMessageAsync(chat.Id, "Извините, ошибка в боте");
                         break;
+                }
+                if (dataParts[0] == YesCmd || dataParts[0] == NoCmd || dataParts[0] == SkipCmd)
+                {
+                    string txt = "";
+                    if (dataParts.Length > 2)
+                    {
+                        IEnumerable<IEnumerable<InlineKeyboardButton>> ikb = callbackQuery.Message.ReplyMarkup.InlineKeyboard;
+                        foreach (IEnumerable<InlineKeyboardButton> oneButton in ikb)
+                        {
+                            if (oneButton.First().Text.StartsWith(dataParts[2]))
+                            {
+                                txt = oneButton.First().Text;
+                                break;
+                            }
+                        }
+                    }
+                    botLinq.AddToUsersLog(botUsers.Id, dataParts[0] == YesCmd ? 'Y' : 'N', AskNumb, TrueNumb, callbackQuery.Message.Text, txt);
                 }
             }
         }

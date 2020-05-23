@@ -78,7 +78,7 @@ namespace TestBot
                                                                         (x.TrueInd.ToString().ToUpper() == "Y"
                                                                             ? BotForm.YesCmd
                                                                             : BotForm.NoCmd)
-                                                                         + ":" + guid.ToString()
+                                                                         + ":" + guid.ToString() + ":" + x.Ind.ToString()
                                                                        )
                                 }
                             );
