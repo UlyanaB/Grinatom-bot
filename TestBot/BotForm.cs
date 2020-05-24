@@ -169,6 +169,14 @@ namespace TestBot
                         await botClient.SendTextMessageAsync(chat.Id, "Извините, ошибка в боте");
                         break;
                 }
+                if (dataParts[0] == YesCmd)
+                {
+                    if (botUsers.BestResult < TrueNumb)
+                    {
+                        botUsers.BestResult = TrueNumb;
+                        botLinq.AddOrUpdateBotUsers(botUsers);
+                    }
+                }
                 if (dataParts[0] == YesCmd || dataParts[0] == NoCmd || dataParts[0] == SkipCmd)
                 {
                     string txt = "";

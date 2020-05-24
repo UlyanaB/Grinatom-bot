@@ -147,19 +147,19 @@ namespace TestBot
         /// </summary>
         /// <param name="botUsers"></param>
         /// <returns></returns>
-        internal BotUsers AddorUpdateBotUsers(BotUsers botUsers)
+        internal BotUsers AddOrUpdateBotUsers(BotUsers botUsers)
         {
-            Predicate<BotUsers> predicate = x => x.TlgUserId == botUsers.TlgUserId;
-            BotUsers usr = data.GetTable<BotUsers>().FirstOrDefault(x => predicate(x));
+            //Predicate<BotUsers> predicate = x => x.TlgUserId == botUsers.TlgUserId;
+            BotUsers usr = data.GetTable<BotUsers>().FirstOrDefault(x => x.TlgUserId == botUsers.TlgUserId);
             if (usr == null)
             {
                 data.GetTable<BotUsers>().InsertOnSubmit(botUsers);
                 data.SubmitChanges();
-                usr = data.GetTable<BotUsers>().FirstOrDefault(x => predicate(x));
+                usr = data.GetTable<BotUsers>().FirstOrDefault(x => x.TlgUserId == botUsers.TlgUserId);
             }
             else
             {
-                usr = data.GetTable<BotUsers>().Where(x => predicate(x)).ToList()[0];
+                usr = data.GetTable<BotUsers>().Where(x => x.TlgUserId == botUsers.TlgUserId).ToList()[0];
                 usr.LastEnter = DateTime.Now;
                 data.SubmitChanges();
             }
