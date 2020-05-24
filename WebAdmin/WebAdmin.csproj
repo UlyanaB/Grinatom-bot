@@ -192,6 +192,7 @@
     <Content Include="Content\bootstrap-theme.css.map" />
     <Content Include="Account\Web.config" />
     <Content Include="WebForms\AdminForm.aspx" />
+    <Content Include="WebForms\FactsForm.aspx" />
     <Content Include="WebForms\UsersAndLogsForm.aspx" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="WebForms\LoginForm.aspx" />
@@ -349,6 +350,13 @@
     </Compile>
     <Compile Include="WebForms\AdminForm.aspx.designer.cs">
       <DependentUpon>AdminForm.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="WebForms\FactsForm.aspx.cs">
+      <DependentUpon>FactsForm.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="WebForms\FactsForm.aspx.designer.cs">
+      <DependentUpon>FactsForm.aspx</DependentUpon>
     </Compile>
     <Compile Include="WebForms\LoginForm.aspx.cs">
       <DependentUpon>LoginForm.aspx</DependentUpon>

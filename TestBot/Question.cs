@@ -16,7 +16,6 @@ namespace TestBot
     internal class Question
     {
         private BotLinq BotLnq;
-        private readonly IList<int> AskNumbLst = null;
         private readonly Random random = new Random();
 
         private readonly KeyValuePair<string, string> StartCommand
@@ -27,26 +26,32 @@ namespace TestBot
                                                                 = new KeyValuePair<string, string>("Выйти", BotForm.ExitCmd);
         private readonly KeyValuePair<string, string> SkipCommand
                                                                 = new KeyValuePair<string, string>("Пропустить", BotForm.SkipCmd);
+        private readonly KeyValuePair<string, string> FactCommand
+                                                                = new KeyValuePair<string, string>("Факты", BotForm.FactCmd);
+
+        internal readonly IList<int> AskNumbLst = null;
+        internal IList<int> FactNumbLst = null;
 
         internal Question(BotLinq botLinq)
         {
             BotLnq = botLinq;
             AskNumbLst = botLinq.GetAskList();
+            FactNumbLst = botLinq.GetFactList();
         }
 
         /// <summary>
         /// получить номер следующего вопроса
         /// </summary>
         /// <returns>номер следующего вопроса, если вопросов больше нет то возвращает -1</returns>
-        internal int GetNextNumb()
+        internal int GetNextNumb(IList<int> lst)
         {
-            if (AskNumbLst.Count == 0)
+            if (lst.Count == 0)
             {
                 return -1;
             }
-            int r = random.Next(AskNumbLst.Count);
-            int nextNumb = AskNumbLst[r];
-            AskNumbLst.RemoveAt(r);
+            int r = random.Next(lst.Count);
+            int nextNumb = lst[r];
+            lst.RemoveAt(r);
             return nextNumb;
         }
 
@@ -97,7 +102,8 @@ namespace TestBot
                             new []
                                 {
                                     InlineKeyboardButton.WithCallbackData(ContinueCommand.Key, ContinueCommand.Value + ":" + guid.ToString()),
-                                        InlineKeyboardButton.WithCallbackData(ExitCommand.Key, ExitCommand.Value + ":" + guid.ToString()),
+                                    InlineKeyboardButton.WithCallbackData(ExitCommand.Key, ExitCommand.Value + ":" + guid.ToString()),
+                                    InlineKeyboardButton.WithCallbackData(FactCommand.Key, FactCommand.Value + ":" + guid.ToString()),
                                 }
                         }
                                             );
@@ -114,6 +120,7 @@ namespace TestBot
                                 {
                                     InlineKeyboardButton.WithCallbackData(StartCommand.Key, StartCommand.Value + ":" + guid.ToString()),
                                     InlineKeyboardButton.WithCallbackData(ExitCommand.Key, ExitCommand.Value + ":" + guid.ToString()),
+                                    InlineKeyboardButton.WithCallbackData(FactCommand.Key, FactCommand.Value + ":" + guid.ToString()),
                                 }
                         }
                                         );
@@ -129,6 +136,7 @@ namespace TestBot
                             new []
                                 {
                                     InlineKeyboardButton.WithCallbackData(ExitCommand.Key, ExitCommand.Value + ":" + guid.ToString()),
+                                    InlineKeyboardButton.WithCallbackData(FactCommand.Key, FactCommand.Value + ":" + guid.ToString()),
                                 }
                         }
                                         );

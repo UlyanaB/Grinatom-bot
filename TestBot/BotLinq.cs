@@ -96,7 +96,16 @@ namespace TestBot
 
             [Column(Name = "AnsTxt", DbType = "varchar(500) NOT NULL", CanBeNull = false)]
             public string AnsTxt { get; set; }
+        }
 
+        [Table(Name = "Fact")]
+        internal class Fact
+        {
+            [Column(Name = "Id", DbType = "Int NOT NULL IDENTITY", IsPrimaryKey = true, IsDbGenerated = true, CanBeNull = false)]
+            public int Id { get; set; }
+
+            [Column(Name = "txt", DbType = "varchar(2000) NOT NULL", CanBeNull = false)]
+            public string Txt { get; set; }
         }
 
         #endregion DB description
@@ -172,7 +181,7 @@ namespace TestBot
         /// <param name="tlgUserId"></param>
         /// <param name="tlgUserName"></param>
         /// <returns></returns>
-        internal BotUsers AddorUpdateBotUsers(int tlgUserId, string tlgUserName)
+        internal BotUsers AddOrUpdateBotUsers(int tlgUserId, string tlgUserName)
         {
             BotUsers botUsers = new BotUsers() { BestResult = 0, FirstEnter = DateTime.Now, LastEnter = DateTime.Now, TlgUserId = tlgUserId, TlgUserName = tlgUserName };
             //Predicate<BotUsers> predicate = x => x.TlgUserId == botUsers.TlgUserId;
@@ -226,5 +235,23 @@ namespace TestBot
             }
         }
 
+        /// <summary>
+        /// взять один факт по id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        internal string GetFactById(int id)
+        {
+            return data.GetTable<Fact>().First(x => x.Id == id).Txt;
+        }
+
+        /// <summary>
+        /// вернуть список номеров фактов
+        /// </summary>
+        /// <returns></returns>
+        internal IList<int> GetFactList()
+        {
+            return data.GetTable<Fact>().Select(x => x.Id).ToList();
+        }
     }
 }

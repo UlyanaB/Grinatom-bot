@@ -26,7 +26,8 @@ namespace TestBot
         internal const string ContCmd    = "/ContinueCommand";
         internal const string ExitCmd    = "/ExitCommand";
         internal const string TimeoutCmd = "/TimeoutCommand";
-        internal const string SkipCmd   = "/SkipCommand";
+        internal const string SkipCmd = "/SkipCommand";
+        internal const string FactCmd = "/FactCommand";
         internal const string NoCmd     = "/NoCommand";
         internal const string YesCmd    = "/YesCommand";
 
@@ -41,6 +42,7 @@ namespace TestBot
         private int AskNumb = 0;    // вопросов задано
         private int TrueNumb = 0;   // правильных ответов
         private BotLinq.BotUsers botUsers = null;
+        private int askId;
 
         #region Init Bot
         public BotForm()
@@ -48,7 +50,6 @@ namespace TestBot
             InitializeComponent();
 
             botLinq = new BotLinq();
-            question = new Question(botLinq);
             botClient = new TelegramBotClient(token);
 
             timer = new System.Timers.Timer { Enabled = false, Interval = 60 * 1000, AutoReset = true };
@@ -97,15 +98,21 @@ namespace TestBot
             if (chat == null)
             {
                 chat = e.Message.Chat;
-                int tlgUserId = e.Message.From.Id;
-                string tlgUserName = e.Message.From.FirstName + " " + e.Message.From.LastName;
-                botUsers = botLinq.AddorUpdateBotUsers(tlgUserId, tlgUserName);
             }
             if (e.Message.Type == MessageType.Text)
             {
                 switch (e.Message.Text)
                 {
                     case "/start":
+                        int tlgUserId = e.Message.From.Id;
+                        string tlgUserName = e.Message.From.FirstName + " " + e.Message.From.LastName;
+                        botUsers = botLinq.AddOrUpdateBotUsers(tlgUserId, tlgUserName);
+
+                        AskNumb = 0;    // вопросов задано
+                        TrueNumb = 0;   // правильных ответов
+                        question = new Question(botLinq);
+
+                        question = new Question(botLinq);
                         st = States.Start;
                         guid = Guid.NewGuid();
                         string welcome = "Добро пожаловать " + botUsers.TlgUserName;
@@ -132,17 +139,31 @@ namespace TestBot
                 switch (dataParts[0])
                 {
                     case ContCmd:
-                        int numb = question.GetNextNumb();
-                        if (numb == -1)
+                        askId = question.GetNextNumb(question.AskNumbLst);
+                        if (askId == -1)
                         {
                             await botClient.SendTextMessageAsync(chat.Id, "У нас больше нет вопросов",
                                                                     replyMarkup: question.CreateExitInlineKeyboard(guid));
                             break;
                         }
-                        string header = question.CreateHeader(numb);
-                        ikm = question.CreateAnsInlineKeyboard(numb, guid);
+                        string header = question.CreateHeader(askId);
+                        ikm = question.CreateAnsInlineKeyboard(askId, guid);
                         await botClient.SendTextMessageAsync(chat.Id, header, replyMarkup: ikm);
                         timer.Enabled = true;
+                        break;
+
+                    case FactCmd:
+                        int id = question.GetNextNumb(question.FactNumbLst);
+                        if (id == -1)
+                        {
+                            question.FactNumbLst = botLinq.GetFactList();
+                            id = question.GetNextNumb(question.FactNumbLst);
+                        }
+                        string fact = botLinq.GetFactById(id);
+                        InlineKeyboardMarkup ikm1 = askId == -1
+                                                        ? question.CreateExitInlineKeyboard(guid)
+                                                        : question.CreateContinueOrExitInlineKeyboard(guid);
+                        await botClient.SendTextMessageAsync(chat.Id, fact, replyMarkup: ikm1);
                         break;
 
                     case YesCmd:
