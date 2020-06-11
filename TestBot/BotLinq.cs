@@ -110,7 +110,7 @@ namespace TestBot
 
         #endregion DB description
 
-        private const string connectionString = @"Data Source = LocalHost; Initial Catalog = TelegramBot; Integrated Security = True";
+        private const string connectionString = @"Data Source=DESKTOP-N3D8F06\SQLEXPRESS;Initial Catalog=TelegramBot;Integrated Security=True";
 
         private DataContext data = null;
 
