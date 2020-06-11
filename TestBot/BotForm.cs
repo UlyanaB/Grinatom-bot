@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -48,24 +49,32 @@ namespace TestBot
         #region Init Bot
         public BotForm()
         {
-            InitializeComponent();
+            try
+            {
+                InitializeComponent();
 
-            botLinq = new BotLinq();
-            botClient = new TelegramBotClient(token);
+                botLinq = new BotLinq();
+                WebProxy httpProxy = new WebProxy(@"114.199.80.99", 8182); 
+                botClient = new TelegramBotClient(token, httpProxy);
 
-            timer = new System.Timers.Timer { Enabled = false, Interval = 60 * 1000, AutoReset = true };
-            timer.Elapsed += Timer_Elapsed;
+                timer = new System.Timers.Timer { Enabled = false, Interval = 60 * 1000, AutoReset = true };
+                timer.Elapsed += Timer_Elapsed;
 
-            botClient.OnMessage += BotClient_OnMessageReceived;
-            botClient.OnMessageEdited += BotClient_OnMessageReceived;
-            botClient.OnCallbackQuery += BotOnCallbackQueryReceived;
-            botClient.OnInlineQuery += BotOnInlineQueryReceived;
-            botClient.OnInlineResultChosen += BotOnChosenInlineResultReceived;
-            botClient.OnReceiveError += BotOnReceiveError;
+                botClient.OnMessage += BotClient_OnMessageReceived;
+                botClient.OnMessageEdited += BotClient_OnMessageReceived;
+                botClient.OnCallbackQuery += BotOnCallbackQueryReceived;
+                botClient.OnInlineQuery += BotOnInlineQueryReceived;
+                botClient.OnInlineResultChosen += BotOnChosenInlineResultReceived;
+                botClient.OnReceiveError += BotOnReceiveError;
 
-            botClient.StartReceiving(Array.Empty<UpdateType>());
+                botClient.StartReceiving(Array.Empty<UpdateType>());
 
-            st = States.None;
+                st = States.None;
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
         #endregion Init Bot
 
@@ -88,134 +97,156 @@ namespace TestBot
 
         private async void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            timer.Enabled = false;
-            guid = Guid.NewGuid();
-            string flsAns = string.Format("Вы не успели ответить ( {0} из {1} )", TrueNumb, AskNumb);
-            await botClient.SendTextMessageAsync(chat.Id, flsAns, replyMarkup: question.CreateContinueOrExitInlineKeyboard(guid));
+            try
+            {
+                timer.Enabled = false;
+                guid = Guid.NewGuid();
+                string flsAns = string.Format("Вы не успели ответить ( {0} из {1} )", TrueNumb, AskNumb);
+                await botClient.SendTextMessageAsync(chat.Id, flsAns, replyMarkup: question.CreateContinueOrExitInlineKeyboard(guid));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private async void BotClient_OnMessageReceived(object sender, MessageEventArgs e)
         {
-            if (chat == null)
+            try
             {
-                chat = e.Message.Chat;
-            }
-            if (e.Message.Type == MessageType.Text)
-            {
-                switch (e.Message.Text)
+                if (chat == null)
                 {
-                    case "/start":
-                        int tlgUserId = e.Message.From.Id;
-                        string tlgUserName = e.Message.From.FirstName + " " + e.Message.From.LastName;
-                        botUsers = botLinq.AddOrUpdateBotUsers(tlgUserId, tlgUserName);
+                    chat = e.Message.Chat;
+                }
+                if (e.Message.Type == MessageType.Text)
+                {
+                    switch (e.Message.Text)
+                    {
+                        case "/start":
+                            int tlgUserId = e.Message.From.Id;
+                            string tlgUserName = e.Message.From.FirstName + " " + e.Message.From.LastName;
+                            botUsers = botLinq.AddOrUpdateBotUsers(tlgUserId, tlgUserName);
 
-                        AskNumb = 0;    // вопросов задано
-                        TrueNumb = 0;   // правильных ответов
-                        question = new Question(botLinq);
+                            AskNumb = 0;    // вопросов задано
+                            TrueNumb = 0;   // правильных ответов
+                            question = new Question(botLinq);
 
-                        question = new Question(botLinq);
-                        st = States.Start;
-                        guid = Guid.NewGuid();
-                        string welcome = "Добро пожаловать " + botUsers.TlgUserName;
-                        await botClient.SendTextMessageAsync(chat.Id, welcome, replyMarkup: question.CreateStartOrExitInlineKeyboard(guid));
-                        return;
+                            question = new Question(botLinq);
+                            st = States.Start;
+                            guid = Guid.NewGuid();
+                            string welcome = "Добро пожаловать " + botUsers.TlgUserName;
+                            await botClient.SendTextMessageAsync(chat.Id, welcome, replyMarkup: question.CreateStartOrExitInlineKeyboard(guid));
+                            return;
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
         }
 
         private async void BotOnCallbackQueryReceived(object sender, CallbackQueryEventArgs callbackQueryEventArgs)
         {
-            timer.Enabled = false;
-            if (st == States.Stop)
+            try
             {
-                return;
-            }
-
-            CallbackQuery callbackQuery = callbackQueryEventArgs.CallbackQuery;
-            string x = callbackQuery.Message.Text;
-            string[] dataParts = callbackQuery.Data.Split(':');
-            if ((dataParts.Length == 2 || dataParts.Length == 3) && dataParts[1] == guid.ToString())
-            {
-                guid = Guid.NewGuid();
-                switch (dataParts[0])
+                timer.Enabled = false;
+                if (st == States.Stop)
                 {
-                    case ContCmd:
-                        askId = question.GetNextNumb(question.AskNumbLst);
-                        if (askId == -1)
-                        {
-                            await botClient.SendTextMessageAsync(chat.Id, "У нас больше нет вопросов",
-                                                                    replyMarkup: question.CreateExitInlineKeyboard(guid));
-                            break;
-                        }
-                        string header = question.CreateHeader(askId);
-                        ikm = question.CreateAnsInlineKeyboard(askId, guid);
-                        await botClient.SendTextMessageAsync(chat.Id, header, replyMarkup: ikm);
-                        timer.Enabled = true;
-                        break;
-
-                    case FactCmd:
-                        int id = question.GetNextNumb(question.FactNumbLst);
-                        if (id == -1)
-                        {
-                            question.FactNumbLst = botLinq.GetFactList();
-                            id = question.GetNextNumb(question.FactNumbLst);
-                        }
-                        string fact = botLinq.GetFactById(id);
-                        InlineKeyboardMarkup ikm1 = askId == -1
-                                                        ? question.CreateExitInlineKeyboard(guid)
-                                                        : question.CreateContinueOrExitInlineKeyboard(guid);
-                        await botClient.SendTextMessageAsync(chat.Id, fact, replyMarkup: ikm1);
-                        break;
-
-                    case YesCmd:
-                        string trAns = string.Format("Правильный ответ! ( {0} из {1} )", ++TrueNumb, ++AskNumb);
-                        await botClient.SendTextMessageAsync(chat.Id, trAns, replyMarkup: question.CreateContinueOrExitInlineKeyboard(guid));
-                        break;
-
-                    case NoCmd:
-                        string flsAns = string.Format("Вы ошиблись ( {0} из {1} )", TrueNumb, ++AskNumb);
-                        await botClient.SendTextMessageAsync(chat.Id, flsAns, replyMarkup: question.CreateContinueOrExitInlineKeyboard(guid));
-                        break;
-
-                    case SkipCmd:
-                        string skpAns = string.Format("Вы отказались от ответа ( {0} из {1} )", TrueNumb, ++AskNumb);
-                        await botClient.SendTextMessageAsync(chat.Id, skpAns, replyMarkup: question.CreateContinueOrExitInlineKeyboard(guid));
-                        break;
-
-                    case ExitCmd:
-                        st = States.Stop;
-                        await botClient.SendTextMessageAsync(chat.Id, "Заходите еще");
-                        break;
-
-                    default:
-                        await botClient.SendTextMessageAsync(chat.Id, "Извините, ошибка в боте");
-                        break;
+                    return;
                 }
-                if (dataParts[0] == YesCmd)
+
+                CallbackQuery callbackQuery = callbackQueryEventArgs.CallbackQuery;
+                string x = callbackQuery.Message.Text;
+                string[] dataParts = callbackQuery.Data.Split(':');
+                if ((dataParts.Length == 2 || dataParts.Length == 3) && dataParts[1] == guid.ToString())
                 {
-                    if (botUsers.BestResult < TrueNumb)
+                    guid = Guid.NewGuid();
+                    switch (dataParts[0])
                     {
-                        botUsers.BestResult = TrueNumb;
-                        botLinq.AddOrUpdateBotUsers(botUsers);
-                    }
-                }
-                if (dataParts[0] == YesCmd || dataParts[0] == NoCmd || dataParts[0] == SkipCmd)
-                {
-                    string txt = "";
-                    if (dataParts.Length > 2)
-                    {
-                        IEnumerable<IEnumerable<InlineKeyboardButton>> ikb = callbackQuery.Message.ReplyMarkup.InlineKeyboard;
-                        foreach (IEnumerable<InlineKeyboardButton> oneButton in ikb)
-                        {
-                            if (oneButton.First().Text.StartsWith(dataParts[2]))
+                        case ContCmd:
+                            askId = question.GetNextNumb(question.AskNumbLst);
+                            if (askId == -1)
                             {
-                                txt = oneButton.First().Text;
+                                await botClient.SendTextMessageAsync(chat.Id, "У нас больше нет вопросов",
+                                                                        replyMarkup: question.CreateExitInlineKeyboard(guid));
                                 break;
                             }
+                            string header = question.CreateHeader(askId);
+                            ikm = question.CreateAnsInlineKeyboard(askId, guid);
+                            await botClient.SendTextMessageAsync(chat.Id, header, replyMarkup: ikm);
+                            timer.Enabled = true;
+                            break;
+
+                        case FactCmd:
+                            int id = question.GetNextNumb(question.FactNumbLst);
+                            if (id == -1)
+                            {
+                                question.FactNumbLst = botLinq.GetFactList();
+                                id = question.GetNextNumb(question.FactNumbLst);
+                            }
+                            string fact = botLinq.GetFactById(id);
+                            InlineKeyboardMarkup ikm1 = askId == -1
+                                                            ? question.CreateExitInlineKeyboard(guid)
+                                                            : question.CreateContinueOrExitInlineKeyboard(guid);
+                            await botClient.SendTextMessageAsync(chat.Id, fact, replyMarkup: ikm1);
+                            break;
+
+                        case YesCmd:
+                            string trAns = string.Format("Правильный ответ! ( {0} из {1} )", ++TrueNumb, ++AskNumb);
+                            await botClient.SendTextMessageAsync(chat.Id, trAns, replyMarkup: question.CreateContinueOrExitInlineKeyboard(guid));
+                            break;
+
+                        case NoCmd:
+                            string flsAns = string.Format("Вы ошиблись ( {0} из {1} )", TrueNumb, ++AskNumb);
+                            await botClient.SendTextMessageAsync(chat.Id, flsAns, replyMarkup: question.CreateContinueOrExitInlineKeyboard(guid));
+                            break;
+
+                        case SkipCmd:
+                            string skpAns = string.Format("Вы отказались от ответа ( {0} из {1} )", TrueNumb, ++AskNumb);
+                            await botClient.SendTextMessageAsync(chat.Id, skpAns, replyMarkup: question.CreateContinueOrExitInlineKeyboard(guid));
+                            break;
+
+                        case ExitCmd:
+                            st = States.Stop;
+                            await botClient.SendTextMessageAsync(chat.Id, "Заходите еще");
+                            break;
+
+                        default:
+                            await botClient.SendTextMessageAsync(chat.Id, "Извините, ошибка в боте");
+                            break;
+                    }
+                    if (dataParts[0] == YesCmd)
+                    {
+                        if (botUsers.BestResult < TrueNumb)
+                        {
+                            botUsers.BestResult = TrueNumb;
+                            botLinq.AddOrUpdateBotUsers(botUsers);
                         }
                     }
-                    botLinq.AddToUsersLog(botUsers.Id, dataParts[0] == YesCmd ? 'Y' : 'N', AskNumb, TrueNumb, callbackQuery.Message.Text, txt);
+                    if (dataParts[0] == YesCmd || dataParts[0] == NoCmd || dataParts[0] == SkipCmd)
+                    {
+                        string txt = "";
+                        if (dataParts.Length > 2)
+                        {
+                            IEnumerable<IEnumerable<InlineKeyboardButton>> ikb = callbackQuery.Message.ReplyMarkup.InlineKeyboard;
+                            foreach (IEnumerable<InlineKeyboardButton> oneButton in ikb)
+                            {
+                                if (oneButton.First().Text.StartsWith(dataParts[2]))
+                                {
+                                    txt = oneButton.First().Text;
+                                    break;
+                                }
+                            }
+                        }
+                        botLinq.AddToUsersLog(botUsers.Id, dataParts[0] == YesCmd ? 'Y' : 'N', AskNumb, TrueNumb, callbackQuery.Message.Text, txt);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
             }
         }
     }
