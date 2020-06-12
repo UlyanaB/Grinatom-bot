@@ -8,6 +8,8 @@ namespace TestBot
 {
     static class Program
     {
+        internal static BotForm BotForm = null;
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -16,14 +18,9 @@ namespace TestBot
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            try
-            {
-                Application.Run(new BotForm());
-            }
-            catch(Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+
+            BotForm = new BotForm();
+            Application.Run(BotForm);
         }
     }
 }
