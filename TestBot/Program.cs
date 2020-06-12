@@ -16,7 +16,14 @@ namespace TestBot
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new BotForm());
+            try
+            {
+                Application.Run(new BotForm());
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
     }
 }

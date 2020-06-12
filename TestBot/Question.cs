@@ -76,7 +76,7 @@ namespace TestBot
             BotLinq.Ask ask = BotLnq.GetAskByOrd(ordNumb);
             IEnumerable<InlineKeyboardButton[]> ikm
                 = BotLnq
-                    .GetAnsByAsk(ask)
+                    .GetRandomizedAnsByAsk(ask)
                     .Select(x => new[]
                                { InlineKeyboardButton.WithCallbackData(
                                                                          x.Ind.ToString() + ") " + x.AnsTxt,

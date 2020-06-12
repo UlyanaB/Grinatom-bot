@@ -54,7 +54,9 @@ namespace TestBot
                 InitializeComponent();
 
                 botLinq = new BotLinq();
-                WebProxy httpProxy = new WebProxy(@"114.199.80.99", 8182); 
+                //WebProxy httpProxy = new WebProxy(@"114.199.80.99", 8182);
+                //WebProxy httpProxy = new WebProxy(@"114.234.80.44", 9000);
+                WebProxy httpProxy = new WebProxy(@"1.1.165.91", 8080); 
                 botClient = new TelegramBotClient(token, httpProxy);
 
                 timer = new System.Timers.Timer { Enabled = false, Interval = 60 * 1000, AutoReset = true };
@@ -240,7 +242,8 @@ namespace TestBot
                                 }
                             }
                         }
-                        botLinq.AddToUsersLog(botUsers.Id, dataParts[0] == YesCmd ? 'Y' : 'N', AskNumb, TrueNumb, callbackQuery.Message.Text, txt);
+                        string msgTxt = callbackQuery.Message.Text;
+                        botLinq.AddToUsersLog(botUsers.Id, dataParts[0] == YesCmd ? 'Y' : 'N', AskNumb, TrueNumb, msgTxt, txt);
                     }
                 }
             }

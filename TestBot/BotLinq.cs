@@ -111,7 +111,13 @@ namespace TestBot
         #endregion DB description
 
         private const string connectionString = @"Data Source=DESKTOP-N3D8F06\SQLEXPRESS;Initial Catalog=TelegramBot;Integrated Security=True";
-
+        private readonly List<char> Choice = new List<char>(new[] { 'а', 'б', 'в', 'г', 'д', 
+                                                                    'е', 'ё', 'ж', 'з', 'и', 
+                                                                    'й', 'к', 'л', 'м', 'н', 
+                                                                    'о', 'п', 'р', 'с', 'т', 
+                                                                    'у', 'ф', 'х', 'ц', 'ч', 
+                                                                    'ш', 'щ', 'ъ', 'ы', 'ь',
+                                                                    'э', 'ю', 'я'});
         private DataContext data = null;
 
         internal BotLinq()
@@ -139,6 +145,30 @@ namespace TestBot
         {
             IEnumerable<Ans> ans = data.GetTable<Ans>().Where(x => x.IdAsk == ask.Id).OrderBy(x => x.Ind);
             return ans;
+        }
+
+        /// <summary>
+        /// вернуть ответы по вопросу, варианты ответов перемешиваются случайным образом
+        /// </summary>
+        /// <param name="ask">вопрос</param>
+        /// <returns>ответы</returns>
+        internal IEnumerable<Ans> GetRandomizedAnsByAsk(Ask ask)
+        {
+            Random random = new Random();
+            IList<char> localChoice = new List<char>(Choice);
+            IEnumerable<Ans> ans = GetAnsByAsk(ask);
+            IList<Ans> oldAnsList = ans.ToList();
+            IList<Ans> ansList = new List<Ans>();
+            while (oldAnsList.Count() > 0)
+            {
+                int r = random.Next(oldAnsList.Count());
+                char ind = localChoice[r];
+                localChoice.RemoveAt(r);
+                oldAnsList[0].Ind = ind;
+                ansList.Add(oldAnsList[0]);
+                oldAnsList.RemoveAt(0);
+            }
+            return ansList.OrderBy(x => x.Ind).AsEnumerable();
         }
 
         /// <summary>
@@ -225,14 +255,7 @@ namespace TestBot
             UsersLog usersLog = new UsersLog() {    BotUserId = botUserId, TrueAns = trueAns, AskQuantity = askQuantity,
                                                     TrueAnsQuantity = trueAnsQuantity, AskTxt = askTxt, AnsTxt = ansTxt    };
             data.GetTable<UsersLog>().InsertOnSubmit(usersLog);
-            try
-            {
-                data.SubmitChanges();
-            }
-            catch(Exception ex)
-            {
-
-            }
+            data.SubmitChanges();
         }
 
         /// <summary>
