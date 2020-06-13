@@ -17,6 +17,7 @@
                 <Items>
                     <asp:MenuItem NavigateUrl="~/WebForms/AskAnsForm.aspx" Text="Редактировать вопросы и ответы" Value="EditAskAns"></asp:MenuItem>
                     <asp:MenuItem Text="Интересные факты" Value="Facts" NavigateUrl="~/WebForms/FactsForm.aspx"></asp:MenuItem>
+                    <asp:MenuItem NavigateUrl="~/WebForms/BestUsers.aspx" Text="Лучшие результаты" Value="BestResults"></asp:MenuItem>
                     <asp:MenuItem Text="Протокол" Value="Log" NavigateUrl="~/WebForms/UsersAndLogsForm.aspx"></asp:MenuItem>
                     <asp:MenuItem Text="Выход" Value="Exit"></asp:MenuItem>
                 </Items>

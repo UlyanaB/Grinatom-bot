@@ -305,6 +305,7 @@
     <Content Include="Scripts\umd\popper.js" />
     <Content Include="Scripts\umd\popper.min.js" />
     <Content Include="WebForms\AdminForm.aspx" />
+    <Content Include="WebForms\BestUsers.aspx" />
     <Content Include="WebForms\FactsForm.aspx" />
     <Content Include="WebForms\UsersAndLogsForm.aspx" />
     <Content Include="WebForms\LoginForm.aspx" />
@@ -456,6 +457,13 @@
     </Compile>
     <Compile Include="WebForms\AdminForm.aspx.designer.cs">
       <DependentUpon>AdminForm.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="WebForms\BestUsers.aspx.cs">
+      <DependentUpon>BestUsers.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="WebForms\BestUsers.aspx.designer.cs">
+      <DependentUpon>BestUsers.aspx</DependentUpon>
     </Compile>
     <Compile Include="WebForms\FactsForm.aspx.cs">
       <DependentUpon>FactsForm.aspx</DependentUpon>

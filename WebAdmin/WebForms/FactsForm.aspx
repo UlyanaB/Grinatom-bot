@@ -40,19 +40,7 @@
             <SortedDescendingCellStyle BackColor="#E9EBEF" />
             <SortedDescendingHeaderStyle BackColor="#4870BE" />
         </asp:GridView>
-        <asp:SqlDataSource ID="SqlDataSourceFact" runat="server" ConflictDetection="CompareAllValues" ConnectionString="<%$ ConnectionStrings:TelegramBotConnectionString %>" DeleteCommand="DELETE FROM [Fact] WHERE [id] = @original_id AND [txt] = @original_txt" InsertCommand="INSERT INTO [Fact] ([txt]) VALUES (@txt)" OldValuesParameterFormatString="original_{0}" SelectCommand="SELECT * FROM [Fact] ORDER BY [id] DESC" UpdateCommand="UPDATE [Fact] SET [txt] = @txt WHERE [id] = @original_id AND [txt] = @original_txt">
-            <DeleteParameters>
-                <asp:Parameter Name="original_id" Type="Int32" />
-                <asp:Parameter Name="original_txt" Type="String" />
-            </DeleteParameters>
-            <InsertParameters>
-                <asp:Parameter Name="txt" Type="String" />
-            </InsertParameters>
-            <UpdateParameters>
-                <asp:Parameter Name="txt" Type="String" />
-                <asp:Parameter Name="original_id" Type="Int32" />
-                <asp:Parameter Name="original_txt" Type="String" />
-            </UpdateParameters>
+        <asp:SqlDataSource ID="SqlDataSourceFact" runat="server" ConnectionString="<%$ ConnectionStrings:TelegramBotConnectionString %>" OldValuesParameterFormatString="original_{0}" SelectCommand="SELECT * FROM [Fact] ORDER BY [id]">
         </asp:SqlDataSource>
         <asp:DetailsView ID="DetailsView1" runat="server" AutoGenerateRows="False" CellPadding="4" DataKeyNames="id" DataSourceID="SqlDataSourceFact" ForeColor="#333333" GridLines="None" Height="50px" Width="792px">
             <AlternatingRowStyle BackColor="White" />
