@@ -205,7 +205,6 @@ namespace TestBot
         /// <returns></returns>
         internal BotUsers AddOrUpdateBotUsers(BotUsers botUsers)
         {
-            //Predicate<BotUsers> predicate = x => x.TlgUserId == botUsers.TlgUserId;
             BotUsers usr = data.GetTable<BotUsers>().FirstOrDefault(x => x.TlgUserId == botUsers.TlgUserId);
             if (usr == null)
             {
