@@ -53,6 +53,9 @@ namespace TestBot
             [Column(Name = "Id", DbType = "Int NOT NULL IDENTITY", IsPrimaryKey = true, IsDbGenerated = true, CanBeNull = false)]
             public int Id { get; set; }
 
+            [Column(Name = "TlgChatId", DbType = "Int NOT NULL", CanBeNull = false)]
+            public long TlgChatId { get; set; }
+
             [Column(Name = "TlgUserId", DbType = "Int NOT NULL", CanBeNull = false)]
             public int TlgUserId { get; set; }
 
@@ -225,10 +228,9 @@ namespace TestBot
         /// <param name="tlgUserId"></param>
         /// <param name="tlgUserName"></param>
         /// <returns></returns>
-        internal BotUsers AddOrUpdateBotUsers(int tlgUserId, string tlgUserName)
+        internal BotUsers AddOrUpdateBotUsers(int tlgUserId, long tlgChatId, string tlgUserName)
         {
-            BotUsers botUsers = new BotUsers() { BestResult = 0, FirstEnter = DateTime.Now, LastEnter = DateTime.Now, TlgUserId = tlgUserId, TlgUserName = tlgUserName };
-            //Predicate<BotUsers> predicate = x => x.TlgUserId == botUsers.TlgUserId;
+            BotUsers botUsers = new BotUsers() { BestResult = 0, FirstEnter = DateTime.Now, LastEnter = DateTime.Now, TlgUserId = tlgUserId, TlgChatId = tlgChatId, TlgUserName = tlgUserName };
             BotUsers usr = data.GetTable<BotUsers>().FirstOrDefault(x => x.TlgUserId == botUsers.TlgUserId);
             if (usr == null)
             {

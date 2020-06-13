@@ -103,7 +103,7 @@ namespace TestBot
                                 botChat = new BotChat() { id = e.Message.Chat.Id, AskNumb = 0, TrueNumb = 0, guid = Guid.NewGuid(), st = States.None };
                                 botChat.timer = new System.Timers.Timer { Enabled = false, Interval = Settings.Default.AnswerTime.TotalMilliseconds, AutoReset = true };
                                 botChat.timer.Elapsed += botChat.Timer_Elapsed;
-                                botChat.botUsers = botLinq.AddOrUpdateBotUsers(e.Message.From.Id, e.Message.From.FirstName + " " + e.Message.From.LastName);
+                                botChat.botUsers = botLinq.AddOrUpdateBotUsers(e.Message.From.Id, e.Message.Chat.Id, e.Message.From.FirstName + " " + e.Message.From.LastName);
                                 botChat.question = new Question(botLinq);
                                 Chats[e.Message.Chat.Id] = botChat;
 
