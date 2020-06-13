@@ -132,6 +132,7 @@ namespace TestBot
                 botChat.timer.Enabled = false;
                 if (botChat.st == States.Stop)
                 {
+                    botChat.timer.Elapsed -= botChat.Timer_Elapsed;
                     botLinq.AddToUsersLog(botChat.botUsers.Id, ' ', botChat.AskNumb, botChat.TrueNumb, "Выход", "Пользователь '" + botChat.botUsers.TlgUserName + "' вышел из чата");
                     Chats.TryRemove(botChat.id, out botChat);
                     return;
@@ -193,6 +194,7 @@ namespace TestBot
                             botChat.st = States.Stop;
                             await botClient.SendTextMessageAsync(botChat.id, "Заходите еще");
                             botLinq.AddToUsersLog(botChat.botUsers.Id, ' ', botChat.AskNumb, botChat.TrueNumb, "Выход", "Пользователь '" + botChat.botUsers.TlgUserName + "' вышел из чата");
+                            botChat.timer.Elapsed -= botChat.Timer_Elapsed;
                             Chats.TryRemove(botChat.id, out botChat);
                             break;
 
