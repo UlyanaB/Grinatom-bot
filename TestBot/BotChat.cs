@@ -27,7 +27,7 @@ namespace TestBot
             {
                 timer.Enabled = false;
                 guid = Guid.NewGuid();
-                string flsAns = string.Format("Вы не успели ответить ( {0} из {1} )", TrueNumb, AskNumb);
+                string flsAns = string.Format("Вы не успели ответить ( {0} из {1} )", TrueNumb, ++AskNumb);
                 await Program.BotForm.botClient.SendTextMessageAsync(id, flsAns, replyMarkup: question.CreateContinueOrExitInlineKeyboard(guid));
                 Program.BotForm.botLinq.AddToUsersLog(botUsers.Id, 'T', AskNumb, TrueNumb, askTxt, "");
             }

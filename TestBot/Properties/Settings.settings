@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="Proxy" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">114.29.238.53:8080</Value>
+      <Value Profile="(Default)">134.196.244.120:46425</Value>
     </Setting>
     <Setting Name="AnswerTime" Type="System.TimeSpan" Scope="Application">
       <Value Profile="(Default)">00:01:00</Value>
