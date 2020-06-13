@@ -22,7 +22,7 @@ namespace TestBot
             [Column(Name = "ord_numb", DbType = "Int NOT NULL", CanBeNull = false)]
             public int OrdNumb { get; set; }
             
-            [Column(Name = "ask_txt", DbType = "Varchar(1000)", CanBeNull = true)]
+            [Column(Name = "ask_txt", DbType = "nvarchar(1000)", CanBeNull = true)]
             public string AskTxt { get; set; }
             
         }
@@ -36,13 +36,13 @@ namespace TestBot
             [Column(Name = "id_ask", DbType = "Int NOT NULL", CanBeNull = false)]
             public int IdAsk { get; set; }
 
-            [Column(Name = "ind", DbType = "char(1) NOT NULL", CanBeNull = false)]
+            [Column(Name = "ind", DbType = "nchar(1) NOT NULL", CanBeNull = false)]
             public char Ind { get; set; }
 
-            [Column(Name = "true_ind", DbType = "char(1) NOT NULL", CanBeNull = false)]
+            [Column(Name = "true_ind", DbType = "nchar(1) NOT NULL", CanBeNull = false)]
             public char TrueInd { get; set; }
 
-            [Column(Name = "ans_txt", DbType = "varchar(500) NOT NULL", CanBeNull = false)]
+            [Column(Name = "ans_txt", DbType = "nvarchar(500) NOT NULL", CanBeNull = false)]
             public string AnsTxt { get; set; }
 
         }
@@ -56,7 +56,7 @@ namespace TestBot
             [Column(Name = "TlgUserId", DbType = "Int NOT NULL", CanBeNull = false)]
             public int TlgUserId { get; set; }
 
-            [Column(Name = "TlgUserName", DbType = "Varchar(100) NOT NULL", CanBeNull = false)]
+            [Column(Name = "TlgUserName", DbType = "nvarchar(100) NOT NULL", CanBeNull = false)]
             public string TlgUserName { get; set; }
 
             [Column(Name = "FirstEnter", DbType = "DateTime NOT NULL", CanBeNull = false)]
@@ -82,7 +82,7 @@ namespace TestBot
             [Column(Name = "BotUsersId", DbType = "Int NOT NULL", CanBeNull = false)]
             public int BotUserId { get; set; }
 
-            [Column(Name = "TrueAns", DbType = "char(1) NOT NULL", CanBeNull = false)]
+            [Column(Name = "TrueAns", DbType = "nchar(1) NOT NULL", CanBeNull = false)]
             public char TrueAns { get; set; }
 
             [Column(Name = "AskQuantity", DbType = "Int NOT NULL", CanBeNull = false)]
@@ -91,11 +91,25 @@ namespace TestBot
             [Column(Name = "TrueAnsQuantity", DbType = "Int NOT NULL", CanBeNull = false)]
             public int TrueAnsQuantity { get; set; }
 
-            [Column(Name = "AskTxt", DbType = "varchar(1000) NOT NULL", CanBeNull = false)]
+            [Column(Name = "AskTxt", DbType = "nvarchar(1000) NOT NULL", CanBeNull = false)]
             public string AskTxt { get; set; }
 
-            [Column(Name = "AnsTxt", DbType = "varchar(500) NOT NULL", CanBeNull = false)]
+            [Column(Name = "AnsTxt", DbType = "nvarchar(500) NOT NULL", CanBeNull = false)]
             public string AnsTxt { get; set; }
+        }
+
+        [Table(Name = "BotErrorLog")]
+        internal class BotErrorLog
+        {
+            [Column(Name = "Id", DbType = "Int NOT NULL IDENTITY", IsPrimaryKey = true, IsDbGenerated = true, CanBeNull = false)]
+            public int Id { get; set; }
+
+            [Column(Name = "dt", DbType = "DateTime", IsDbGenerated = true)]
+            public DateTime Dt { get; set; }
+
+            [Column(Name = "msg", DbType = "nvarchar(max) NOT NULL", CanBeNull = false)]
+            public string Msg{ get; set; }
+
         }
 
         [Table(Name = "Fact")]
@@ -104,7 +118,7 @@ namespace TestBot
             [Column(Name = "Id", DbType = "Int NOT NULL IDENTITY", IsPrimaryKey = true, IsDbGenerated = true, CanBeNull = false)]
             public int Id { get; set; }
 
-            [Column(Name = "txt", DbType = "varchar(2000) NOT NULL", CanBeNull = false)]
+            [Column(Name = "txt", DbType = "nvarchar(2000) NOT NULL", CanBeNull = false)]
             public string Txt { get; set; }
         }
 
@@ -275,6 +289,14 @@ namespace TestBot
         internal IList<int> GetFactList()
         {
             return data.GetTable<Fact>().Select(x => x.Id).ToList();
+        }
+
+        internal void AddToBotErrorLog(string msg)
+        {
+            BotErrorLog botErrorLog = new BotErrorLog() { Msg = msg };
+            data.GetTable<BotErrorLog>().InsertOnSubmit(botErrorLog);
+            data.SubmitChanges();
+
         }
     }
 }

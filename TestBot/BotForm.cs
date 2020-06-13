@@ -17,12 +17,13 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.InlineQueryResults;
 using Telegram.Bot.Types.ReplyMarkups;
+using TestBot.Properties;
 
 namespace TestBot
 {
     public partial class BotForm : Form
     {
-        private const string token = "1238975566:AAFltoIrHNZIOz-Z57hdqTTnHCJJHhWKUjE";
+        //private const string token = "1238975566:AAFltoIrHNZIOz-Z57hdqTTnHCJJHhWKUjE"; // вынесен в Settings
         
         internal const string ContCmd    = "/ContinueCommand";
         internal const string ExitCmd    = "/ExitCommand";
@@ -33,10 +34,9 @@ namespace TestBot
         internal const string YesCmd    = "/YesCommand";
 
         internal ITelegramBotClient botClient = null;
+        internal BotLinq botLinq;
 
-        private BotLinq botLinq;
         private InlineKeyboardMarkup ikm;
-
         private ConcurrentDictionary<long, BotChat> Chats = new ConcurrentDictionary<long, BotChat>();
 
         #region Init Bot
@@ -47,10 +47,9 @@ namespace TestBot
                 InitializeComponent();
 
                 botLinq = new BotLinq();
-                WebProxy httpProxy = new WebProxy(@"114.199.80.99", 8182);
-                //WebProxy httpProxy = new WebProxy(@"128.0.179.234", 41258); 
-                //WebProxy httpProxy = new WebProxy(@"1.1.165.91", 8080); 
-                botClient = new TelegramBotClient(token, httpProxy);
+                string[] proxyParts = Settings.Default.Proxy.Split(new[] { ':' }, 2);
+                WebProxy httpProxy = new WebProxy(proxyParts[0], int.Parse(proxyParts[1]));
+                botClient = new TelegramBotClient(Settings.Default.BotToken, httpProxy);
 
                 botClient.OnMessage += BotClient_OnMessageReceived;
                 botClient.OnMessageEdited += BotClient_OnMessageReceived;
@@ -63,7 +62,7 @@ namespace TestBot
             }
             catch(Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                botLinq.AddToBotErrorLog("BotForm ctor exception - " + ex.Message);
             }
         }
         #endregion Init Bot
@@ -71,17 +70,17 @@ namespace TestBot
         #region Not implemented
         private void BotOnReceiveError(object sender, ReceiveErrorEventArgs e)
         {
-            throw new NotImplementedException();
+            botLinq.AddToBotErrorLog("Unexpected error received - " + e.ApiRequestException.Message);
         }
 
         private void BotOnInlineQueryReceived(object sender, InlineQueryEventArgs e)
         {
-            throw new NotImplementedException(); 
+            botLinq.AddToBotErrorLog("Unexpected InlineQuery received - " + "From: '" + e.InlineQuery.From + "', Query: '" + e.InlineQuery.Query + "'");
         }
 
-        private void BotOnChosenInlineResultReceived(object sender, ChosenInlineResultEventArgs chosenInlineResultEventArgs)
+        private void BotOnChosenInlineResultReceived(object sender, ChosenInlineResultEventArgs e)
         {
-            throw new NotImplementedException();
+            botLinq.AddToBotErrorLog("Unexpected ChosenInlineResult received - " + "From: '" + e.ChosenInlineResult.From + "', Query: '" + e.ChosenInlineResult.Query + "'");
         }
         #endregion Not implemented
 
@@ -101,8 +100,8 @@ namespace TestBot
                             }
                             else
                             {
-                                botChat = new BotChat() { id = e.Message.Chat.Id, AskNumb = -1, TrueNumb = -1, guid = Guid.NewGuid(), st = States.None };
-                                botChat.timer = new System.Timers.Timer { Enabled = false, Interval = 60 * 1000, AutoReset = true };
+                                botChat = new BotChat() { id = e.Message.Chat.Id, AskNumb = 0, TrueNumb = 0, guid = Guid.NewGuid(), st = States.None };
+                                botChat.timer = new System.Timers.Timer { Enabled = false, Interval = Settings.Default.AnswerTime.TotalMilliseconds, AutoReset = true };
                                 botChat.timer.Elapsed += botChat.Timer_Elapsed;
                                 botChat.botUsers = botLinq.AddOrUpdateBotUsers(e.Message.From.Id, e.Message.From.FirstName + " " + e.Message.From.LastName);
                                 botChat.question = new Question(botLinq);
@@ -117,7 +116,7 @@ namespace TestBot
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                botLinq.AddToBotErrorLog("OnMessageReceived exception - " + ex.Message);
             }
 
         }
@@ -130,6 +129,7 @@ namespace TestBot
                 botChat.timer.Enabled = false;
                 if (botChat.st == States.Stop)
                 {
+                    Chats.TryRemove(botChat.id, out botChat);
                     return;
                 }
 
@@ -224,7 +224,7 @@ namespace TestBot
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                botLinq.AddToBotErrorLog("OnCallbackQueryReceived exception - " + ex.Message);
             }
         }
     }

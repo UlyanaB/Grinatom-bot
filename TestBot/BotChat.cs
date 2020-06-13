@@ -31,7 +31,7 @@ namespace TestBot
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                Program.BotForm.botLinq.AddToBotErrorLog("Timer_Elapsed exception - " + ex.Message);
             }
         }
 
