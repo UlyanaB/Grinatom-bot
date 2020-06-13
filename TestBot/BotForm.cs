@@ -106,10 +106,12 @@ namespace TestBot
                                 botChat.botUsers = botLinq.AddOrUpdateBotUsers(e.Message.From.Id, e.Message.From.FirstName + " " + e.Message.From.LastName);
                                 botChat.question = new Question(botLinq);
                                 Chats[e.Message.Chat.Id] = botChat;
-                            }
 
-                            string welcome = "Добро пожаловать " + botChat.botUsers.TlgUserName;
-                            await botClient.SendTextMessageAsync(botChat.id, welcome, replyMarkup: botChat.question.CreateStartOrExitInlineKeyboard(botChat.guid));
+                                string welcome = "Добро пожаловать " + botChat.botUsers.TlgUserName;
+                                await botClient.SendTextMessageAsync(botChat.id, welcome, replyMarkup: botChat.question.CreateStartOrExitInlineKeyboard(botChat.guid));
+
+                                botLinq.AddToUsersLog(botChat.botUsers.Id, ' ', botChat.AskNumb, botChat.TrueNumb, "Вход", "Пользователь '" + botChat.botUsers.TlgUserName + "' вошел в чат");
+                            }
                             return;
                     }
                 }
@@ -123,12 +125,14 @@ namespace TestBot
 
         private async void BotOnCallbackQueryReceived(object sender, CallbackQueryEventArgs callbackQueryEventArgs)
         {
-            BotChat botChat = Chats[callbackQueryEventArgs.CallbackQuery.Message.Chat.Id];
             try
             {
+                BotChat botChat = Chats[callbackQueryEventArgs.CallbackQuery.Message.Chat.Id];
+
                 botChat.timer.Enabled = false;
                 if (botChat.st == States.Stop)
                 {
+                    botLinq.AddToUsersLog(botChat.botUsers.Id, ' ', botChat.AskNumb, botChat.TrueNumb, "Выход", "Пользователь '" + botChat.botUsers.TlgUserName + "' вышел из чата");
                     Chats.TryRemove(botChat.id, out botChat);
                     return;
                 }
@@ -152,6 +156,7 @@ namespace TestBot
                             string header = botChat.question.CreateHeader(botChat.askId);
                             ikm = botChat.question.CreateAnsInlineKeyboard(botChat.askId, botChat.guid);
                             await botClient.SendTextMessageAsync(botChat.id, header, replyMarkup: ikm);
+                            botChat.askTxt = header;
                             botChat.timer.Enabled = true;
                             break;
 
@@ -187,11 +192,13 @@ namespace TestBot
                         case ExitCmd:
                             botChat.st = States.Stop;
                             await botClient.SendTextMessageAsync(botChat.id, "Заходите еще");
+                            botLinq.AddToUsersLog(botChat.botUsers.Id, ' ', botChat.AskNumb, botChat.TrueNumb, "Выход", "Пользователь '" + botChat.botUsers.TlgUserName + "' вышел из чата");
                             Chats.TryRemove(botChat.id, out botChat);
                             break;
 
                         default:
                             await botClient.SendTextMessageAsync(botChat.id, "Извините, ошибка в боте");
+                            botLinq.AddToBotErrorLog("Unexpected CallbackQuery received - " + dataParts[0]);
                             break;
                     }
                     if (dataParts[0] == YesCmd)
@@ -218,7 +225,26 @@ namespace TestBot
                             }
                         }
                         string msgTxt = callbackQuery.Message.Text;
-                        botLinq.AddToUsersLog(botChat.botUsers.Id, dataParts[0] == YesCmd ? 'Y' : 'N', botChat.AskNumb, botChat.TrueNumb, msgTxt, txt);
+                        char ansType;
+                        switch(dataParts[0])
+                        {
+                            case YesCmd:
+                                ansType = 'Y';
+                                break;
+
+                            case NoCmd:
+                                ansType = 'N';
+                                break;
+
+                            case SkipCmd:
+                                ansType = 'S';
+                                break;
+
+                            default:
+                                ansType = 'U';
+                                break;
+                        }
+                        botLinq.AddToUsersLog(botChat.botUsers.Id, ansType, botChat.AskNumb, botChat.TrueNumb, msgTxt, txt);
                     }
                 }
             }

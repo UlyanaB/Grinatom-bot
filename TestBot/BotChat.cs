@@ -14,6 +14,7 @@ namespace TestBot
         internal Guid guid = Guid.Empty;
         internal System.Timers.Timer timer;
         internal States st;
+        internal string askTxt;
         internal int AskNumb = 0;    // вопросов задано
         internal int TrueNumb = 0;   // правильных ответов
         internal BotLinq.BotUsers botUsers = null;
@@ -28,6 +29,7 @@ namespace TestBot
                 guid = Guid.NewGuid();
                 string flsAns = string.Format("Вы не успели ответить ( {0} из {1} )", TrueNumb, AskNumb);
                 await Program.BotForm.botClient.SendTextMessageAsync(id, flsAns, replyMarkup: question.CreateContinueOrExitInlineKeyboard(guid));
+                Program.BotForm.botLinq.AddToUsersLog(botUsers.Id, 'T', AskNumb, TrueNumb, askTxt, "");
             }
             catch (Exception ex)
             {
