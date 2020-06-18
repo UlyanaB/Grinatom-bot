@@ -25,7 +25,7 @@ namespace TestBot.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("134.196.244.120:46425")]
+        [global::System.Configuration.DefaultSettingValueAttribute("1.1.165.91:8080")]
         public string Proxy {
             get {
                 return ((string)(this["Proxy"]));
