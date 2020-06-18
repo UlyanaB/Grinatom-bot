@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace TestBot.Properties {
+namespace WebAdmin.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -29,15 +29,6 @@ namespace TestBot.Properties {
         public string Proxy {
             get {
                 return ((string)(this["Proxy"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("00:01:00")]
-        public global::System.TimeSpan AnswerTime {
-            get {
-                return ((global::System.TimeSpan)(this["AnswerTime"]));
             }
         }
         

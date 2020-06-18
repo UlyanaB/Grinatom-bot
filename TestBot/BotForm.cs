@@ -42,14 +42,22 @@ namespace TestBot
         #region Init Bot
         public BotForm()
         {
+            //  @GreenIT_bot    -   1238975566:AAFltoIrHNZIOz-Z57hdqTTnHCJJHhWKUjE    
             try
             {
                 InitializeComponent();
 
                 botLinq = new BotLinq();
-                string[] proxyParts = Settings.Default.Proxy.Split(new[] { ':' }, 2);
-                WebProxy httpProxy = new WebProxy(proxyParts[0], int.Parse(proxyParts[1]));
-                botClient = new TelegramBotClient(Settings.Default.BotToken, httpProxy);
+                if (string.IsNullOrWhiteSpace(Properties.Settings.Default.Proxy))
+                {
+                    botClient = new TelegramBotClient(Properties.Settings.Default.BotToken);
+                }
+                else
+                {
+                    string[] proxyParts = Properties.Settings.Default.Proxy.Split(new[] { ':' }, 2);
+                    WebProxy httpProxy = new WebProxy(proxyParts[0], int.Parse(proxyParts[1]));
+                    botClient = new TelegramBotClient(Properties.Settings.Default.BotToken, httpProxy);
+                }
 
                 botClient.OnMessage += BotClient_OnMessageReceived;
                 botClient.OnMessageEdited += BotClient_OnMessageReceived;
