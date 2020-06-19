@@ -36,7 +36,6 @@ namespace TestBot
         internal ITelegramBotClient botClient = null;
         internal BotLinq botLinq;
 
-        private AdminServiceHost adminServiceHost = null;
         private InlineKeyboardMarkup ikm;
         private ConcurrentDictionary<long, BotChat> Chats = new ConcurrentDictionary<long, BotChat>();
 
@@ -68,10 +67,6 @@ namespace TestBot
                 botClient.OnReceiveError += BotOnReceiveError;
 
                 botClient.StartReceiving(Array.Empty<UpdateType>());
-
-                adminServiceHost = new AdminServiceHost();
-                adminServiceHost.Prepare("http://localhost:8000/");
-                adminServiceHost.Open();
             }
             catch(Exception ex)
             {
@@ -267,11 +262,6 @@ namespace TestBot
             {
                 botLinq.AddToBotErrorLog("OnCallbackQueryReceived exception - " + ex.Message);
             }
-        }
-
-        private void BotForm_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            adminServiceHost.Close();
         }
     }
 }
