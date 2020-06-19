@@ -7,6 +7,8 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.ServiceModel;
+using System.ServiceModel.Description;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -36,6 +38,8 @@ namespace TestBot
         internal ITelegramBotClient botClient = null;
         internal BotLinq botLinq;
 
+        private Uri baseAddress = new Uri("http://localhost:8081/DESKTOP-N3D8F06/hello/");
+        private ServiceHost host = null;
         private InlineKeyboardMarkup ikm;
         private ConcurrentDictionary<long, BotChat> Chats = new ConcurrentDictionary<long, BotChat>();
 
@@ -67,8 +71,15 @@ namespace TestBot
                 botClient.OnReceiveError += BotOnReceiveError;
 
                 botClient.StartReceiving(Array.Empty<UpdateType>());
+
+                host = new ServiceHost(typeof(TestBotService), baseAddress);
+                ServiceMetadataBehavior smb = new ServiceMetadataBehavior();
+                smb.HttpGetEnabled = true;
+                smb.MetadataExporter.PolicyVersion = PolicyVersion.Policy15;
+                host.Description.Behaviors.Add(smb);
+                host.Open();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 botLinq.AddToBotErrorLog("BotForm ctor exception - " + ex.Message);
             }
@@ -262,6 +273,11 @@ namespace TestBot
             {
                 botLinq.AddToBotErrorLog("OnCallbackQueryReceived exception - " + ex.Message);
             }
+        }
+
+        private void BotForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            host.Close();
         }
     }
 }

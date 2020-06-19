@@ -5,7 +5,7 @@ using System.Net;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using Telegram.Bot;
+using WebAdmin.TestBotSrv;
 
 namespace WebAdmin.WebForms
 {
@@ -28,20 +28,12 @@ namespace WebAdmin.WebForms
 
         protected void btnSend_Click(object sender, EventArgs e)
         {
-            // @GreenIT_Congratulations_bot -   1247571431:AAHo8IqotVqCyvIKe9QGDy12C5CgB_fXo9U
+            TestBotServiceClient cl = null;
             try
             {
-                TelegramBotClient botClient = null;
-                if (string.IsNullOrWhiteSpace(Properties.Settings.Default.Proxy))
-                {
-                    botClient = new TelegramBotClient(Properties.Settings.Default.BotToken);
-                }
-                else
-                {
-                    string[] proxyParts = Properties.Settings.Default.Proxy.Split(new[] { ':' }, 2);
-                    WebProxy httpProxy = new WebProxy(proxyParts[0], int.Parse(proxyParts[1]));
-                    botClient = new TelegramBotClient(Properties.Settings.Default.BotToken, httpProxy);
-                }
+                cl = new TestBotServiceClient();
+                cl.Open();
+
                 GridView gv = GridView1;
                 for (int ordNmb = 0; ordNmb < Math.Min(gv.Rows.Count, 5); ordNmb++)
                 {
@@ -50,14 +42,16 @@ namespace WebAdmin.WebForms
                     string fio = grv.Cells[2].Text;
                     string lastEnter = grv.Cells[4].Text;
                     string bestResult = grv.Cells[5].Text;
-                    string congratulations = "Поздравляем Вас " + fio + "! Вы на " + (ordNmb + 1) + " месте с " + bestResult + " балами. " +
-                                             "Последний раз Вы заходили " + lastEnter;
-                    botClient.SendTextMessageAsync(chatId, congratulations);
+                    bool flg = cl.GetUser(ordNmb + 1, chatId, fio, lastEnter, int.Parse(bestResult));
                 }
             }
             catch (Exception ex)
             {
-
+                
+            }
+            finally
+            {
+                cl.Close();
             }
         }
     }
