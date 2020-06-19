@@ -43,16 +43,17 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(116, 0);
+            this.ClientSize = new System.Drawing.Size(120, 0);
             this.Controls.Add(this.label1);
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(132, 38);
+            this.MaximumSize = new System.Drawing.Size(132, 39);
             this.MinimizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(132, 38);
+            this.MinimumSize = new System.Drawing.Size(132, 39);
             this.Name = "BotForm";
             this.ShowIcon = false;
             this.Text = "TheBot";
             this.WindowState = System.Windows.Forms.FormWindowState.Minimized;
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.BotForm_FormClosed);
             this.ResumeLayout(false);
             this.PerformLayout();
 

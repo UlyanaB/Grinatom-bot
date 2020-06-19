@@ -25,7 +25,7 @@ namespace TestBot
             host.Open();
         }
 
-        internal void Prepare(string httpAdr)   // "http://localhost:8000/"
+        internal void Prepare(string httpAdr)   // 
         {
             host = new WebServiceHost(typeof(AdminService), new Uri(httpAdr));
             ep = host.AddServiceEndpoint(typeof(IAdminService), new WebHttpBinding(), "");
@@ -44,6 +44,13 @@ namespace TestBot
                                         Monitor.Wait(lckObj);
                                     }
                                 });
+            th.Start();
         }
+
+        internal void Close()
+        {
+            Monitor.Pulse(lckObj);
+            host.Close();
     }
+}
 }
