@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Web;
-using System.Web.UI;
+using System.ServiceModel;
+using System.ServiceModel.Description;
 using System.Web.UI.WebControls;
-using Telegram.Bot;
+using TestBot;
 
 namespace WebAdmin.WebForms
 {
@@ -31,18 +28,16 @@ namespace WebAdmin.WebForms
             // @GreenIT_Congratulations_bot -   1247571431:AAHo8IqotVqCyvIKe9QGDy12C5CgB_fXo9U
             try
             {
-                TelegramBotClient botClient = null;
-                if (string.IsNullOrWhiteSpace(Properties.Settings.Default.Proxy))
+                using (ChannelFactory<IAdminService> cf = new ChannelFactory<IAdminService>(new WebHttpBinding(), "http://localhost:8000"))
                 {
-                    botClient = new TelegramBotClient(Properties.Settings.Default.BotToken);
+                    cf.Endpoint.Behaviors.Add(new WebHttpBehavior());
+                    IAdminService channel = cf.CreateChannel();
+                    string s;
+                    s = channel.EchoWithGet("Hello, world");
+                    s = channel.EchoWithPost("Hello, world");
                 }
-                else
-                {
-                    string[] proxyParts = Properties.Settings.Default.Proxy.Split(new[] { ':' }, 2);
-                    WebProxy httpProxy = new WebProxy(proxyParts[0], int.Parse(proxyParts[1]));
-                    botClient = new TelegramBotClient(Properties.Settings.Default.BotToken, httpProxy);
-                }
-                GridView gv = GridView1;
+/*
+                    GridView gv = GridView1;
                 for (int ordNmb = 0; ordNmb < Math.Min(gv.Rows.Count, 5); ordNmb++)
                 {
                     GridViewRow grv = gv.Rows[ordNmb];
@@ -54,6 +49,7 @@ namespace WebAdmin.WebForms
                                              "Последний раз Вы заходили " + lastEnter;
                     botClient.SendTextMessageAsync(chatId, congratulations);
                 }
+*/
             }
             catch (Exception ex)
             {

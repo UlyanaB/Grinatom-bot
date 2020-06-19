@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace TestBot
 {
     [ServiceContract]
-    internal interface IAdminService
+    public interface IAdminService
     {
         [OperationContract]
         [WebGet]

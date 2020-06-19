@@ -53,6 +53,10 @@
     <Reference Include="Telegram.Bot, Version=15.6.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Telegram.Bot.15.6.0\lib\net45\Telegram.Bot.dll</HintPath>
     </Reference>
+    <Reference Include="TestBot, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Release\TestBot.exe</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdminService.cs" />

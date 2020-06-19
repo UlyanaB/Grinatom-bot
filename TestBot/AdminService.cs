@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TestBot
 {
-    internal class AdminService : IAdminService
+    public class AdminService : IAdminService
     {
         public string EchoWithGet(string s)
         {
